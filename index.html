@@ -375,7 +375,8 @@
   ];
   const docs = [
     {file:"Mystery Menu Training Manual.pdf", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
-    {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"}
+    {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"},
+    {url:"https://docs.google.com/presentation/d/125c3IZnlyC7Lze8bgfVtfV2Huo2c6lBt0aqoK5uwUAQ/edit?slide=id.g2bfe17fa51e_0_486#slide=id.g2bfe17fa51e_0_486", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
   ];
 
   const enc = f => f.split('/').map(encodeURIComponent).join('/');
@@ -412,8 +413,8 @@
   docs.forEach(d=>{
     const c = document.createElement('div');
     c.className = 'doc-card';
-    c.dataset.key = 'doc:'+d.file;
-    c.onclick = ()=>{ markDone(c); openPdf(d.file, d.title); };
+    c.dataset.key = 'doc:'+(d.file||d.url);
+    c.onclick = ()=>{ markDone(c); d.url ? window.open(d.url,'_blank','noopener') : openPdf(d.file, d.title); };
     c.innerHTML = `
       <span class="done-badge">✓</span>
       <div class="doc-icon">${d.abbr}</div>
