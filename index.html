@@ -475,6 +475,19 @@
   }
   confirmCheck.addEventListener('change', refreshGate);
 
+  function resetPage(){
+    viewed.clear();
+    document.querySelectorAll('.card.done, .doc-card.done').forEach(el=>el.classList.remove('done'));
+    progressCount.textContent = 0;
+    confirmCheck.checked = false;
+    hostSelect.selectedIndex = 0;
+    note.textContent = '';
+    note.className = 'signoff-note';
+    submitBtn.disabled = true;
+    refreshGate();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
   /* ---------- Sign-off ---------- */
   const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
 
@@ -512,9 +525,9 @@
         headers:{'Content-Type':'text/plain;charset=utf-8'},
         body:JSON.stringify(payload)
       });
-      note.textContent=`✓ Sign-off recorded for ${host}. You're all set.`;
+      note.textContent=`✓ Sign-off recorded for ${host}. Resetting for the next host…`;
       note.className='signoff-note ok';
-      confirmCheck.checked=false; hostSelect.selectedIndex=0; refreshGate();
+      setTimeout(resetPage, 2500);
     }catch(err){
       note.textContent='Could not reach the sign-off sheet. Check your connection and try again.';
       note.className='signoff-note warn'; submitBtn.disabled=false;
