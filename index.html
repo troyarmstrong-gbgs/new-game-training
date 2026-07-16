@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mystery Menu — Training</title>
+<style>
+  :root{
+    --navy:#021D41;
+    --lights-out:#0F2851;
+    --dark-stripe:#24386D;
+    --toupee:#A7B5D6;
+    --offwhite:#F5F6FA;
+    --purple:#9728D1;
+    --coral:#F93A5A;
+    --yellow:#FFBD17;
+    --blue:#4A82FF;
+    --green:#75E099;
+    --grad:linear-gradient(90deg,#9728D1 0%,#F93A5A 50%,#FFBD17 100%);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Poppins','Helvetica Neue',Arial,sans-serif;
+    background:var(--navy);
+    color:#fff;
+    min-height:100vh;
+    background-image:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 26px);
+  }
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:relative;
+    text-align:center;
+    padding:48px 20px 40px;
+    background:var(--lights-out);
+    border-bottom:4px solid transparent;
+    border-image:var(--grad) 1;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(circle at 50% -20%,rgba(151,40,209,.35),transparent 60%);
+  }
+  .kicker{
+    position:relative;
+    display:inline-block;
+    font-size:13px;font-weight:700;letter-spacing:.22em;
+    text-transform:uppercase;
+    padding:6px 16px;border-radius:999px;
+    background:var(--grad);
+    margin-bottom:18px;
+  }
+  .logo{
+    position:relative;
+    display:block;
+    margin:2px auto 0;
+    width:min(190px,44vw);
+    height:auto;
+    filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));
+  }
+  header p.sub{
+    position:relative;
+    margin-top:14px;color:var(--toupee);font-size:16px;font-weight:500;
+    max-width:620px;margin-left:auto;margin-right:auto;
+  }
+  .livebadge{
+    position:relative;display:inline-flex;align-items:center;gap:8px;
+    margin-top:20px;padding:6px 14px;border-radius:999px;
+    background:var(--green);color:var(--navy);font-weight:800;font-size:12px;
+    letter-spacing:.12em;text-transform:uppercase;
+  }
+  .livebadge .dot{width:9px;height:9px;border-radius:50%;background:var(--navy);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1120px;margin:0 auto;padding:48px 20px 80px;}
+  .section-title{
+    display:flex;align-items:center;gap:12px;
+    font-size:26px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;
+    margin:44px 0 22px;
+  }
+  .section-title:first-of-type{margin-top:8px;}
+  .section-title .star{color:var(--yellow);font-size:22px;}
+  .section-title .rule{flex:1;height:3px;border-radius:3px;background:var(--dark-stripe);}
+
+  /* ---------- Cards ---------- */
+  .grid{display:grid;gap:22px;}
+  .videos{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}
+  .card{
+    background:var(--lights-out);
+    border:2px solid var(--dark-stripe);
+    border-radius:18px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-5px);
+    border-color:var(--coral);
+    box-shadow:0 14px 30px rgba(0,0,0,.4);
+  }
+  .thumb{
+    position:relative;aspect-ratio:16/9;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--navy);overflow:hidden;
+  }
+  .thumb .poster{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;object-position:center 22%;
+    filter:brightness(.72);
+  }
+  .thumb::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,rgba(2,29,65,.15),rgba(2,29,65,.55));
+  }
+  .thumb .num{
+    position:absolute;top:12px;left:12px;z-index:3;
+    width:34px;height:34px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:15px;color:#fff;
+    background:var(--grad);
+  }
+  .thumb .play{position:relative;z-index:3;}
+  .done-badge{
+    position:absolute;top:12px;right:12px;z-index:3;
+    width:30px;height:30px;border-radius:50%;
+    background:var(--green);color:var(--navy);
+    display:none;align-items:center;justify-content:center;
+    font-weight:900;font-size:16px;
+  }
+  .card.done .done-badge{display:flex;}
+  .card.done{border-color:var(--green);}
+  .play{
+    width:66px;height:66px;border-radius:50%;
+    background:rgba(255,255,255,.95);
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .18s ease;
+  }
+  .card:hover .play{transform:scale(1.1);}
+  .play::after{
+    content:"";display:block;
+    border-left:22px solid var(--coral);
+    border-top:14px solid transparent;
+    border-bottom:14px solid transparent;
+    margin-left:5px;
+  }
+  .card .body{padding:16px 18px 20px;}
+  .card .body h3{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:.01em;}
+  .card .body p{color:var(--toupee);font-size:13.5px;margin-top:5px;font-weight:500;}
+  .tag{
+    display:inline-block;margin-bottom:10px;
+    padding:3px 12px;border-radius:999px;font-size:11px;font-weight:800;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--navy);
+  }
+  .tag.intro{background:var(--yellow);}
+  .tag.round{background:var(--blue);color:#fff;}
+
+  /* ---------- Docs ---------- */
+  .docs{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));}
+  .doc-card{
+    display:flex;gap:16px;align-items:center;position:relative;
+    background:var(--lights-out);border:2px solid var(--dark-stripe);
+    border-radius:18px;padding:20px;transition:transform .18s,border-color .18s;
+  }
+  .doc-card:hover{transform:translateY(-4px);border-color:var(--yellow);}
+  .doc-card.done{border-color:var(--green);}
+  .doc-card .done-badge{
+    position:absolute;top:10px;right:10px;
+    width:26px;height:26px;border-radius:50%;
+    background:var(--green);color:var(--navy);
+    display:none;align-items:center;justify-content:center;
+    font-weight:900;font-size:14px;
+  }
+  .doc-card.done .done-badge{display:flex;}
+  .doc-icon{
+    flex:none;width:56px;height:70px;border-radius:8px;
+    background:var(--grad);display:flex;align-items:flex-end;justify-content:center;
+    padding-bottom:8px;font-weight:900;font-size:12px;color:#fff;letter-spacing:.05em;
+  }
+  .doc-card .info{flex:1;}
+  .doc-card .info h3{font-size:17px;font-weight:800;text-transform:uppercase;}
+  .doc-card .info p{color:var(--toupee);font-size:13px;margin-top:4px;}
+  .doc-card .go{
+    flex:none;padding:9px 16px;border-radius:999px;font-weight:800;font-size:13px;
+    background:var(--grad);color:#fff;text-transform:uppercase;letter-spacing:.05em;
+  }
+
+  /* ---------- Sign-off ---------- */
+  .signoff{
+    background:var(--lights-out);
+    border:2px solid var(--dark-stripe);
+    border-radius:18px;
+    padding:28px 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  .signoff::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--grad);
+  }
+  .signoff-progress{
+    font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--toupee);margin-bottom:18px;
+  }
+  .signoff-progress b{color:var(--yellow);}
+  .check-row{
+    display:flex;align-items:flex-start;gap:12px;margin-bottom:20px;
+    max-width:760px;cursor:pointer;
+  }
+  .check-row input{
+    flex:none;width:22px;height:22px;margin-top:2px;
+    accent-color:#33BC56;cursor:pointer;
+  }
+  .check-row label{font-size:15px;font-weight:600;line-height:1.4;cursor:pointer;}
+  .check-row strong{color:var(--yellow);}
+  .signoff-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
+
+  .signoff-content{transition:opacity .25s ease,filter .25s ease;}
+  .signoff.locked .signoff-content{
+    opacity:.35;filter:grayscale(1);pointer-events:none;user-select:none;
+  }
+  .lock-overlay{
+    display:none;
+    position:absolute;inset:0;z-index:5;
+    align-items:center;justify-content:center;text-align:center;
+    padding:24px;
+    background:rgba(2,29,65,.55);
+    backdrop-filter:blur(1px);
+  }
+  .signoff.locked .lock-overlay{display:flex;}
+  .lock-overlay span{
+    max-width:520px;font-size:18px;font-weight:800;line-height:1.5;
+    color:#fff;text-transform:uppercase;letter-spacing:.02em;
+  }
+  .lock-overlay span::before{content:"🔒 ";}
+
+  #hostSelect{
+    flex:1;min-width:240px;
+    padding:14px 16px;border-radius:12px;
+    background:var(--navy);color:#fff;
+    border:2px solid var(--dark-stripe);
+    font-size:15px;font-weight:600;font-family:inherit;
+    cursor:pointer;
+  }
+  #hostSelect:focus{outline:none;border-color:var(--blue);}
+  .submit-btn{
+    padding:14px 26px;border:none;border-radius:12px;cursor:pointer;
+    background:var(--grad);color:#fff;
+    font-family:inherit;font-size:15px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.05em;
+    transition:transform .15s ease,opacity .15s ease;
+  }
+  .submit-btn:hover{transform:translateY(-2px);}
+  .submit-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .signoff-note{margin-top:16px;font-size:14px;font-weight:600;min-height:20px;}
+  .signoff-note.ok{color:var(--green);}
+  .signoff-note.warn{color:var(--yellow);}
+
+  /* ---------- Modal ---------- */
+  .modal{
+    position:fixed;inset:0;z-index:100;
+    display:none;align-items:center;justify-content:center;
+    background:rgba(2,10,25,.9);padding:24px;
+  }
+  .modal.open{display:flex;}
+  .modal-inner{
+    width:100%;max-width:1000px;
+    background:var(--lights-out);border:2px solid var(--dark-stripe);
+    border-radius:16px;overflow:hidden;
+  }
+  .modal-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;border-bottom:2px solid var(--dark-stripe);
+  }
+  .modal-bar h3{font-size:16px;font-weight:800;text-transform:uppercase;letter-spacing:.02em;}
+  .close{
+    width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;
+    background:var(--coral);color:#fff;font-size:18px;font-weight:900;line-height:1;
+  }
+  .modal .video-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;max-height:75vh;}
+  .modal .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
+  .modal iframe.pdf{width:100%;height:80vh;border:none;background:#fff;}
+
+  footer{
+    text-align:center;padding:28px 20px 40px;color:var(--toupee);
+    font-size:12px;letter-spacing:.05em;
+  }
+</style>
+</head>
+<body>
+  <header>
+    <span class="kicker">Great Big Game Show · New Game Training</span>
+    <img class="logo" src="mystery-menu.png" alt="Mystery Menu">
+    <p class="sub">Watch the walkthroughs and review the docs below to get show-ready. Start with the rules, then run through each round.</p>
+    <div class="livebadge"><span class="dot"></span> Training Mode</div>
+  </header>
+
+  <main>
+    <h2 class="section-title"><span class="star">★</span> Watch the Videos <span class="rule"></span></h2>
+    <div class="grid videos" id="videoGrid"></div>
+
+    <h2 class="section-title"><span class="star">★</span> Must-Read Training Documents <span class="rule"></span></h2>
+    <div class="grid docs" id="docGrid"></div>
+
+    <h2 class="section-title"><span class="star">★</span> Sign-Off <span class="rule"></span></h2>
+    <div class="signoff locked" id="signoff">
+      <div class="lock-overlay">
+        <span>You must click and view/watch all content before Sign-Off can be submitted.</span>
+      </div>
+      <div class="signoff-content">
+        <p class="signoff-progress">Progress: <b id="progressCount">0</b> of <b id="progressTotal">8</b> items viewed</p>
+        <label class="check-row">
+          <input type="checkbox" id="confirmCheck">
+          <label for="confirmCheck">I have watched and reviewed <strong>ALL</strong> of the material on this page and am ready to begin in-studio training / sign-off.</label>
+        </label>
+        <div class="signoff-row">
+          <select id="hostSelect" aria-label="Select your name">
+            <option value="" disabled selected>Select your name…</option>
+          </select>
+          <button id="submitBtn" class="submit-btn" disabled>Submit Sign-Off</button>
+        </div>
+        <p class="signoff-note" id="signoffNote"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer></footer>
+
+  <!-- Video modal -->
+  <div class="modal" id="videoModal">
+    <div class="modal-inner">
+      <div class="modal-bar">
+        <h3 id="videoTitle"></h3>
+        <button class="close" onclick="closeVideo()">×</button>
+      </div>
+      <div class="video-wrap"><iframe id="player" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
+    </div>
+  </div>
+
+  <!-- PDF modal -->
+  <div class="modal" id="pdfModal">
+    <div class="modal-inner">
+      <div class="modal-bar">
+        <h3 id="pdfTitle"></h3>
+        <button class="close" onclick="closePdf()">×</button>
+      </div>
+      <iframe id="pdfFrame" class="pdf"></iframe>
+    </div>
+  </div>
+
+<script>
+  /* =========================================================
+     VIDEO SOURCES — paste each video's Google Drive share link
+     (or just the file ID) between the quotes below.
+     A share link looks like:
+       https://drive.google.com/file/d/1AbCdEfGhIjK.../view?usp=sharing
+     Set each video to "Anyone with the link -> Viewer" in Drive.
+     ========================================================= */
+  const VIDEO_SOURCES = {
+    "rules":  "https://drive.google.com/file/d/1kPNxweOwK6ws1D_ozV42eXiGph_HJ44C/view?usp=drive_link",
+    "intro":  "https://drive.google.com/file/d/1N5V865o-7J6AmqUowZLIPhNd-bwRI84s/view?usp=drive_link",
+    "lucky":  "https://drive.google.com/file/d/1z44q7MVy4i4iFKwX8rFzR9_E5DnkApya/view?usp=drive_link",
+    "silly":  "https://drive.google.com/file/d/17w3DVi777a6_3uINBnfmKyxHEV0rntVS/view?usp=drive_link",
+    "smart":  "https://drive.google.com/file/d/1Tc4PAehH6-JmaSVsxV-BG4btji9AXmG3/view?usp=drive_link",
+    "hungry": "https://drive.google.com/file/d/1dXyLE7VJL9gvZkJ0AnPU4kYee63qJMSg/view?usp=drive_link"
+  };
+
+  const videos = [
+    {key:"rules",  title:"Rules Video",   tag:"Start Here", cls:"intro", thumb:"thumbnails/Rules.jpg",         desc:"The official rules of Mystery Menu."},
+    {key:"intro",  title:"Intro",         tag:"Overview",   cls:"intro", thumb:"thumbnails/Intro.jpg",         desc:"Overview of how Mystery Menu is played."},
+    {key:"lucky",  title:"Feeling Lucky", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Lucky.jpg", desc:"Walkthrough of the Feeling Lucky microgame."},
+    {key:"silly",  title:"Feeling Silly", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Silly.jpg", desc:"Walkthrough of the Feeling Silly microgame."},
+    {key:"smart",  title:"Feeling Smart", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Smart.jpg", desc:"Walkthrough of the Feeling Smart microgame."},
+    {key:"hungry", title:"Feeling Hungry",tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Hungry.jpg",desc:"Walkthrough of the Feeling Hungry microgame."}
+  ];
+  const docs = [
+    {file:"Mystery Menu Training Manual.pdf", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
+    {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"}
+  ];
+
+  const enc = f => f.split('/').map(encodeURIComponent).join('/');
+
+  // Pull the Drive file ID out of a share link (or accept a bare ID)
+  function driveId(src){
+    if(!src) return "";
+    const m = src.match(/[-\w]{25,}/);
+    return m ? m[0] : src;
+  }
+
+  const vGrid = document.getElementById('videoGrid');
+  videos.forEach((v,i)=>{
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.dataset.key = 'video:'+v.key;
+    c.onclick = ()=>{ markDone(c); openVideo(v.key, v.title); };
+    c.innerHTML = `
+      <div class="thumb">
+        <img class="poster" src="${enc(v.thumb)}" alt="">
+        <span class="num">${i===0?'▶':i}</span>
+        <span class="done-badge">✓</span>
+        <div class="play"></div>
+      </div>
+      <div class="body">
+        <span class="tag ${v.cls}">${v.tag}</span>
+        <h3>${v.title}</h3>
+        <p>${v.desc}</p>
+      </div>`;
+    vGrid.appendChild(c);
+  });
+
+  const dGrid = document.getElementById('docGrid');
+  docs.forEach(d=>{
+    const c = document.createElement('div');
+    c.className = 'doc-card';
+    c.dataset.key = 'doc:'+d.file;
+    c.onclick = ()=>{ markDone(c); openPdf(d.file, d.title); };
+    c.innerHTML = `
+      <span class="done-badge">✓</span>
+      <div class="doc-icon">${d.abbr}</div>
+      <div class="info">
+        <h3>${d.title}</h3>
+        <p>${d.desc}</p>
+      </div>
+      <span class="go">View</span>`;
+    dGrid.appendChild(c);
+  });
+
+  const vModal=document.getElementById('videoModal'),
+        player=document.getElementById('player'),
+        pModal=document.getElementById('pdfModal'),
+        frame=document.getElementById('pdfFrame');
+
+  function openVideo(key,title){
+    document.getElementById('videoTitle').textContent = title;
+    const id = driveId(VIDEO_SOURCES[key]);
+    player.src = `https://drive.google.com/file/d/${id}/preview`;
+    vModal.classList.add('open');
+  }
+  function closeVideo(){ player.src=''; vModal.classList.remove('open'); }
+  function openPdf(file,title){
+    document.getElementById('pdfTitle').textContent = title;
+    frame.src = enc(file);
+    pModal.classList.add('open');
+  }
+  function closePdf(){ frame.src=''; pModal.classList.remove('open'); }
+
+  [vModal,pModal].forEach(m=>m.addEventListener('click',e=>{
+    if(e.target===m){ closeVideo(); closePdf(); }
+  }));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeVideo(); closePdf(); }});
+
+  /* ---------- Completion tracking + gating ---------- */
+  const totalItems = videos.length + docs.length;
+  const viewed = new Set();
+  const signoff = document.getElementById('signoff');
+  const confirmCheck = document.getElementById('confirmCheck');
+  const submitBtn = document.getElementById('submitBtn');
+  const hostSelect = document.getElementById('hostSelect');
+  const note = document.getElementById('signoffNote');
+  const progressCount = document.getElementById('progressCount');
+  document.getElementById('progressTotal').textContent = totalItems;
+
+  function markDone(card){
+    if(viewed.has(card.dataset.key)) return;
+    viewed.add(card.dataset.key);
+    card.classList.add('done');
+    progressCount.textContent = viewed.size;
+    refreshGate();
+  }
+  function refreshGate(){
+    const allViewed = viewed.size >= totalItems;
+    signoff.classList.toggle('locked', !allViewed);
+    submitBtn.disabled = !(allViewed && confirmCheck.checked);
+  }
+  confirmCheck.addEventListener('change', refreshGate);
+
+  /* ---------- Sign-off ---------- */
+  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
+
+  const hosts = [
+    "Kurt Fernandez","Kayla Griffey","Hannah Hector","Matthew Kalb",
+    "Lexi Lyle","John Mauldin","Troy Scalf","Daniel Schurz",
+    "Tasha Wade","Tiffany Vineyard","Tatiana Parker","Alex Trussler","Houston Vick"
+  ];
+  hosts.forEach(name=>{
+    const o=document.createElement('option');
+    o.value=name;o.textContent=name;hostSelect.appendChild(o);
+  });
+
+  submitBtn.addEventListener('click',async ()=>{
+    if(submitBtn.disabled) return;
+    const host=hostSelect.value;
+    if(!host){
+      note.textContent='Please select your name before submitting.';
+      note.className='signoff-note warn'; return;
+    }
+    if(!ENDPOINT_URL){
+      note.textContent='Sign-off endpoint not set up yet.';
+      note.className='signoff-note warn'; return;
+    }
+    const payload={
+      name: host, confirmed: true,
+      confirmationText: "I have watched and reviewed ALL of the material on this page and am ready to begin in-studio training / sign-off.",
+      submittedAt: new Date().toISOString(), game: "Mystery Menu"
+    };
+    submitBtn.disabled=true;
+    note.textContent='Submitting…'; note.className='signoff-note';
+    try{
+      await fetch(ENDPOINT_URL,{
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload)
+      });
+      note.textContent=`✓ Sign-off recorded for ${host}. You're all set.`;
+      note.className='signoff-note ok';
+      confirmCheck.checked=false; hostSelect.selectedIndex=0; refreshGate();
+    }catch(err){
+      note.textContent='Could not reach the sign-off sheet. Check your connection and try again.';
+      note.className='signoff-note warn'; submitBtn.disabled=false;
+    }
+  });
+
+  refreshGate();
+</script>
+</body>
+</html>
