@@ -350,20 +350,22 @@
 
 <script>
   /* =========================================================
-     VIDEO SOURCES — paste each video's Google Drive share link
-     (or just the file ID) between the quotes below.
-     A share link looks like:
-       https://drive.google.com/file/d/1AbCdEfGhIjK.../view?usp=sharing
-     Set each video to "Anyone with the link -> Viewer" in Drive.
+     VIDEO SOURCES — paste each video's YouTube link (or ID)
+     between the quotes below. Any of these forms works:
+       https://youtu.be/VIDEOID
+       https://www.youtube.com/watch?v=VIDEOID
+       https://www.youtube.com/embed/VIDEOID
+       VIDEOID
+     Set each video to "Unlisted" (or Public) in YouTube so it embeds.
      ========================================================= */
   const VIDEO_SOURCES = {
-    "rules":       "https://drive.google.com/file/d/1kPNxweOwK6ws1D_ozV42eXiGph_HJ44C/view?usp=drive_link",
-    "playthrough": "https://drive.google.com/file/d/1AUeV2eRwxb_y1IF9m1x8i-onC_er8x_Q/view?usp=sharing",
-    "intro":  "https://drive.google.com/file/d/1N5V865o-7J6AmqUowZLIPhNd-bwRI84s/view?usp=drive_link",
-    "lucky":  "https://drive.google.com/file/d/1z44q7MVy4i4iFKwX8rFzR9_E5DnkApya/view?usp=drive_link",
-    "silly":  "https://drive.google.com/file/d/17w3DVi777a6_3uINBnfmKyxHEV0rntVS/view?usp=drive_link",
-    "smart":  "https://drive.google.com/file/d/1Tc4PAehH6-JmaSVsxV-BG4btji9AXmG3/view?usp=drive_link",
-    "hungry": "https://drive.google.com/file/d/1dXyLE7VJL9gvZkJ0AnPU4kYee63qJMSg/view?usp=drive_link"
+    "rules":       "https://youtu.be/srSM0A_HX0o",
+    "playthrough": "https://youtu.be/8D4QrmJ43Qs",
+    "intro":       "https://youtu.be/pQJpI0NcTdE",
+    "lucky":       "https://youtu.be/h-3y_g2JTXE",
+    "silly":       "https://youtu.be/4jtUPVrCCg4",
+    "smart":       "https://youtu.be/g1oZG6Or0nk",
+    "hungry":      "https://youtu.be/qBgIQ9PcdYs"
   };
 
   const videos = [
@@ -383,11 +385,13 @@
 
   const enc = f => f.split('/').map(encodeURIComponent).join('/');
 
-  // Pull the Drive file ID out of a share link (or accept a bare ID)
-  function driveId(src){
+  // Pull the YouTube video ID out of any link form (or accept a bare ID)
+  function ytId(src){
     if(!src) return "";
-    const m = src.match(/[-\w]{25,}/);
-    return m ? m[0] : src;
+    let m = src.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+    if(m) return m[1];
+    m = src.match(/^[A-Za-z0-9_-]{11}$/);
+    return m ? src : "";
   }
 
   const vGrid = document.getElementById('videoGrid');
@@ -435,8 +439,10 @@
 
   function openVideo(key,title){
     document.getElementById('videoTitle').textContent = title;
-    const id = driveId(VIDEO_SOURCES[key]);
-    player.src = `https://drive.google.com/file/d/${id}/preview`;
+    const id = ytId(VIDEO_SOURCES[key]);
+    player.src = id
+      ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
+      : "";
     vModal.classList.add('open');
   }
   function closeVideo(){ player.src=''; vModal.classList.remove('open'); }

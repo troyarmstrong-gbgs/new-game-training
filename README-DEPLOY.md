@@ -2,41 +2,44 @@
 
 This `github-deploy` folder is self-contained: `index.html`, the two PDFs, the logo,
 and the `thumbnails` folder. The **videos are NOT in here** — they're too big for GitHub
-(100 MB per-file limit), so they stream from Google Drive.
+(100 MB per-file limit), so they play from YouTube (unlisted). Unlike Google Drive,
+YouTube streams inline reliably instead of forcing a download.
 
-Do these two things in order: **(A) put the videos on Drive and paste the links**, then
+Do these two things in order: **(A) put the videos on YouTube and paste the links**, then
 **(B) push the folder to GitHub and turn on Pages.**
 
 ---
 
-## A. Host the videos on Google Drive
+## A. Host the videos on YouTube
 
-1. Upload all 6 videos to a folder in Google Drive:
-   Rules Video, Intro, Feeling Lucky, Feeling Silly, Feeling Smart, Feeling Hungry.
-2. For **each** video: right-click → **Share** → under "General access" choose
-   **Anyone with the link** → role **Viewer**. (If they're not shared this way, they
-   won't play on the site.)
-3. Right-click each video → **Copy link**. You'll get something like:
-   `https://drive.google.com/file/d/1AbCdEfGhIjKlMnOpQr.../view?usp=sharing`
+1. Upload all 7 videos to YouTube (one channel is fine):
+   Rules Video, Full Playthrough, Intro, Feeling Lucky, Feeling Silly, Feeling Smart,
+   Feeling Hungry.
+2. For **each** video, set **Visibility = Unlisted** (only people with the link can find
+   it; it won't show up in search). Public also works. **Private will NOT embed.**
+3. On each video, click **Share** → **Copy link**. You'll get something like:
+   `https://youtu.be/dQw4w9WgXcQ`
 4. Open `index.html` in a text editor and find the `VIDEO_SOURCES` block near the top of
    the `<script>`. Paste each link between the quotes:
 
    ```javascript
    const VIDEO_SOURCES = {
-     "rules":  "https://drive.google.com/file/d/1kPNxweOwK6ws1D_ozV42eXiGph_HJ44C/view?usp=drive_link",
-     "intro":  "https://drive.google.com/file/d/1N5V865o-7J6AmqUowZLIPhNd-bwRI84s/view?usp=drive_link",
-     "lucky":  "https://drive.google.com/file/d/1z44q7MVy4i4iFKwX8rFzR9_E5DnkApya/view?usp=drive_link",
-     "silly":  "https://drive.google.com/file/d/17w3DVi777a6_3uINBnfmKyxHEV0rntVS/view?usp=drive_link",
-     "smart":  "https://drive.google.com/file/d/1Tc4PAehH6-JmaSVsxV-BG4btji9AXmG3/view?usp=drive_link",
-     "hungry": "https://drive.google.com/file/d/1dXyLE7VJL9gvZkJ0AnPU4kYee63qJMSg/view?usp=drive_link"
+     "rules":       "https://youtu.be/VIDEOID",
+     "playthrough": "https://youtu.be/VIDEOID",
+     "intro":       "https://youtu.be/VIDEOID",
+     "lucky":       "https://youtu.be/VIDEOID",
+     "silly":       "https://youtu.be/VIDEOID",
+     "smart":       "https://youtu.be/VIDEOID",
+     "hungry":      "https://youtu.be/VIDEOID"
    };
    ```
 
-   (You can paste the full link — the code pulls the file ID out automatically.)
+   (Any YouTube link form works — watch?v=, youtu.be/, or /embed/ — the code pulls the
+   ID out automatically. You can also paste just the 11-character ID.)
 5. Save the file.
 
-> Tip: open `index.html` by double-clicking it and click a video to confirm each one
-> plays before you deploy.
+> Tip: open `index.html` by double-clicking it and click each video to confirm it plays
+> before you deploy. Videos autoplay when opened.
 
 ---
 
