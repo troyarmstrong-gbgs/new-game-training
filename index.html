@@ -378,7 +378,7 @@
     {key:"hungry", title:"Feeling Hungry",tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Hungry.jpg",desc:"Walkthrough of the Feeling Hungry microgame."}
   ];
   const docs = [
-    {file:"Mystery Menu Training Manual.pdf", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
+    {file:"Mystery Menu Training Manual.pdf", v:"20260731", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
     {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"},
     {url:"https://docs.google.com/presentation/d/125c3IZnlyC7Lze8bgfVtfV2Huo2c6lBt0aqoK5uwUAQ/edit?slide=id.g2bfe17fa51e_0_486#slide=id.g2bfe17fa51e_0_486", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
   ];
@@ -420,7 +420,7 @@
     const c = document.createElement('div');
     c.className = 'doc-card';
     c.dataset.key = 'doc:'+(d.file||d.url);
-    c.onclick = ()=>{ markDone(c); d.url ? window.open(d.url,'_blank','noopener') : openPdf(d.file, d.title); };
+    c.onclick = ()=>{ markDone(c); d.url ? window.open(d.url,'_blank','noopener') : openPdf(d); };
     c.innerHTML = `
       <span class="done-badge">✓</span>
       <div class="doc-icon">${d.abbr}</div>
@@ -446,9 +446,9 @@
     vModal.classList.add('open');
   }
   function closeVideo(){ player.src=''; vModal.classList.remove('open'); }
-  function openPdf(file,title){
-    document.getElementById('pdfTitle').textContent = title;
-    frame.src = enc(file);
+  function openPdf(d){
+    document.getElementById('pdfTitle').textContent = d.title;
+    frame.src = enc(d.file) + (d.v ? ('?v=' + d.v) : '');
     pModal.classList.add('open');
   }
   function closePdf(){ frame.src=''; pModal.classList.remove('open'); }
