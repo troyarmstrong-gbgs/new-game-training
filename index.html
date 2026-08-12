@@ -215,6 +215,16 @@
   .check-row strong{color:var(--yellow);}
   .signoff-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;}
 
+  .field{
+    flex:1;min-width:220px;
+    padding:14px 16px;border-radius:12px;
+    background:var(--navy);color:#fff;
+    border:2px solid var(--dark-stripe);
+    font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;
+  }
+  .field:focus{outline:none;border-color:var(--blue);}
+  .field:disabled{opacity:.5;cursor:not-allowed;}
+
   .signoff-content{transition:opacity .25s ease,filter .25s ease;}
   .signoff.locked .signoff-content{
     opacity:.35;filter:grayscale(1);pointer-events:none;user-select:none;
@@ -234,15 +244,6 @@
   }
   .lock-overlay span::before{content:"🔒 ";}
 
-  #hostSelect{
-    flex:1;min-width:240px;
-    padding:14px 16px;border-radius:12px;
-    background:var(--navy);color:#fff;
-    border:2px solid var(--dark-stripe);
-    font-size:15px;font-weight:600;font-family:inherit;
-    cursor:pointer;
-  }
-  #hostSelect:focus{outline:none;border-color:var(--blue);}
   .submit-btn{
     padding:14px 26px;border:none;border-radius:12px;cursor:pointer;
     background:var(--grad);color:#fff;
@@ -281,8 +282,38 @@
   .modal .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:none;}
   .modal iframe.pdf{width:100%;height:80vh;border:none;background:#fff;}
 
+  /* ---------- Admin ---------- */
+  .admin-btn{
+    position:fixed;bottom:16px;right:16px;z-index:60;
+    padding:9px 14px;border-radius:999px;border:2px solid var(--dark-stripe);
+    background:var(--lights-out);color:var(--toupee);
+    font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;cursor:pointer;opacity:.7;
+  }
+  .admin-btn:hover{opacity:1;border-color:var(--yellow);color:#fff;}
+  .admin-inner{max-width:920px;max-height:90vh;display:flex;flex-direction:column;}
+  .admin-body{padding:20px;overflow:auto;}
+  .admin-section{margin-bottom:28px;}
+  .admin-section h4{font-size:14px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;color:var(--yellow);}
+  .admin-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .admin-table th,.admin-table td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--dark-stripe);vertical-align:middle;}
+  .admin-table th{color:var(--toupee);text-transform:uppercase;font-size:11px;letter-spacing:.06em;}
+  .admin-scroll{max-height:280px;overflow:auto;border:1px solid var(--dark-stripe);border-radius:10px;}
+  .mini{padding:5px 11px;border:none;border-radius:8px;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;}
+  .mini.del{background:var(--coral);color:#fff;}
+  .mini.add{background:var(--green);color:var(--navy);}
+  .admin-input{padding:9px 11px;border-radius:8px;border:2px solid var(--dark-stripe);background:var(--navy);color:#fff;font-family:inherit;font-size:13px;}
+  .admin-input:focus{outline:none;border-color:var(--blue);}
+  .admin-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;}
+  .gate{padding:36px 24px;text-align:center;}
+  .gate input{margin:0 8px 0 0;width:200px;}
+  .export-bar{padding:16px 20px;border-top:2px solid var(--dark-stripe);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+  .hint{color:var(--toupee);font-size:12px;line-height:1.5;}
+  .pill-linked{color:var(--green);font-weight:700;}
+  .pill-nolink{color:var(--yellow);font-weight:700;}
+
   footer{
-    text-align:center;padding:28px 20px 40px;color:var(--toupee);
+    text-align:center;padding:28px 20px 60px;color:var(--toupee);
     font-size:12px;letter-spacing:.05em;
   }
 </style>
@@ -308,14 +339,17 @@
         <span>You must click and view/watch all content before Sign-Off can be submitted.</span>
       </div>
       <div class="signoff-content">
-        <p class="signoff-progress">Progress: <b id="progressCount">0</b> of <b id="progressTotal">8</b> items viewed</p>
+        <p class="signoff-progress">Progress: <b id="progressCount">0</b> of <b id="progressTotal">10</b> items viewed</p>
         <label class="check-row">
           <input type="checkbox" id="confirmCheck">
           <label for="confirmCheck">I have watched and reviewed <strong>ALL</strong> of the material on this page and am ready to begin in-studio training / sign-off.</label>
         </label>
         <div class="signoff-row">
-          <select id="hostSelect" aria-label="Select your name">
-            <option value="" disabled selected>Select your name…</option>
+          <select id="storeSelect" class="field" aria-label="Select your store">
+            <option value="" disabled selected>Select your store…</option>
+          </select>
+          <select id="hostSelect" class="field" aria-label="Select your name" disabled>
+            <option value="" disabled selected>Select your store first…</option>
           </select>
           <button id="submitBtn" class="submit-btn" disabled>Submit Sign-Off</button>
         </div>
@@ -324,6 +358,7 @@
     </div>
   </main>
 
+  <button class="admin-btn" onclick="openAdmin()">⚙ Admin</button>
   <footer></footer>
 
   <!-- Video modal -->
@@ -348,15 +383,66 @@
     </div>
   </div>
 
+  <!-- Admin modal -->
+  <div class="modal" id="adminModal">
+    <div class="modal-inner admin-inner">
+      <div class="modal-bar">
+        <h3>Admin — Stores &amp; Hosts</h3>
+        <button class="close" onclick="closeAdmin()">×</button>
+      </div>
+      <div id="adminGate" class="gate">
+        <p style="margin-bottom:16px;font-weight:600;">Enter admin passcode</p>
+        <input type="password" id="adminPass" class="admin-input" placeholder="Passcode" onkeydown="if(event.key==='Enter')tryUnlock()">
+        <button class="mini add" onclick="tryUnlock()">Unlock</button>
+        <p id="gateMsg" class="hint" style="margin-top:12px;"></p>
+      </div>
+      <div id="adminBody" class="admin-body" style="display:none;">
+        <div class="admin-section">
+          <h4>Stores</h4>
+          <div class="admin-scroll">
+            <table class="admin-table">
+              <thead><tr><th>#</th><th>Name</th><th>Sheet</th><th></th></tr></thead>
+              <tbody id="adminStores"></tbody>
+            </table>
+          </div>
+          <div class="admin-form">
+            <input class="admin-input" id="newStoreNum" placeholder="No. (e.g. 25)" style="width:110px;">
+            <input class="admin-input" id="newStoreName" placeholder="Store name" style="flex:1;min-width:150px;">
+            <input class="admin-input" id="newStoreUrl" placeholder="Google Sheet link (with #gid=…)" style="flex:2;min-width:220px;">
+            <button class="mini add" onclick="addStore()">Add store</button>
+          </div>
+        </div>
+        <div class="admin-section">
+          <h4>Hosts</h4>
+          <input class="admin-input" id="hostSearch" placeholder="Search hosts…" style="width:100%;margin-bottom:10px;" oninput="renderAdminHosts()">
+          <div class="admin-scroll">
+            <table class="admin-table">
+              <thead><tr><th>First</th><th>Last</th><th>Store #s</th><th></th></tr></thead>
+              <tbody id="adminHosts"></tbody>
+            </table>
+          </div>
+          <div class="admin-form">
+            <input class="admin-input" id="newHostFirst" placeholder="First name" style="width:140px;">
+            <input class="admin-input" id="newHostLast" placeholder="Last name" style="width:140px;">
+            <input class="admin-input" id="newHostStores" placeholder="Store #s, comma-separated (e.g. 01,07)" style="flex:1;min-width:200px;">
+            <button class="mini add" onclick="addHost()">Add host</button>
+          </div>
+          <p class="hint" style="margin-top:8px;">A host listed at multiple stores will appear in each. First-name spelling must match the name header on that store's passport tab.</p>
+        </div>
+      </div>
+      <div class="export-bar" id="exportBar" style="display:none;">
+        <span class="hint">Changes live in this browser only. To make them permanent for everyone, download the file and re-upload it to GitHub.</span>
+        <button class="submit-btn" onclick="exportSite()">⬇ Download updated index.html</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Store + host data (edited via Admin, exported on download) -->
+  <script id="site-data" type="application/json">{"stores":[{"num":"01","name":"Nashville: Opry Mills","sheetId":"1RkM17dXKp0MTK-jWQYX__fRNivcfRoPimDCdB6qYiW4","gid":"1681493407"},{"num":"02","name":"The Colony","sheetId":"1cL9Y-wTZ618ho1JCYpiZ1iuoc9B7lN3mxBTPNY0E5L4","gid":"1305789006"},{"num":"03","name":"Minneapolis","sheetId":"1C2A5MEZ8jUgdN63Gsh8GH0P97cppsxQlwvqJw6OPj20","gid":"1453920259"},{"num":"04","name":"San Francisco: Wharf","sheetId":"1oFCN5hvuPeVkdi5sssh_qxEne_rQBW_5KqNnPLxRmJM","gid":"1353966129"},{"num":"05","name":"Houston: CityCentre","sheetId":"1o9qiGBNeEOo2r3NxKx7cOxzOAVU9oHD3WDFvP-lVYcY","gid":"542958889"},{"num":"06","name":"Oak Brook","sheetId":"1XB6f1LVGWR_2_ALhhpJUTCJbyNtsiQBN81Aymm09Sbo","gid":"1490293856"},{"num":"07","name":"Pigeon Forge","sheetId":"1BhfCsCFDN9d3NJJSldJdYvmxcd2Kpds5blZUk9abT3c","gid":"147592990"},{"num":"08","name":"DC: Georgetown","sheetId":"1fij7yaArAPaOqHZ3mtef5lRsjaEia9j-JXvVj77BNQQ","gid":"1670225900"},{"num":"09","name":"Las Vegas: Forum Shops","sheetId":"112UxMRyxGWcqrGI5P6p81pRJuEvngWcOY7_U6rcYmnc","gid":"49573383"},{"num":"10","name":"New Jersey","sheetId":"1Ke33DIsZJhIiqtC26xwNCwN53uwJPGtB0PQyVE2RadE","gid":"1352091650"},{"num":"11","name":"Honolulu","sheetId":"18ttGoNMqFSlG8P0VTrauQpSbdcL2rAUCU8EFtavidCs","gid":"737338316"},{"num":"12","name":"St. Louis","sheetId":"1VPOf4EgdRmbwdMKzVx0_3j-FulRNx17sXQ26ln7UkBo","gid":"1637642022"},{"num":"13","name":"San Jose","sheetId":"1lvmgLs55Ohat0Mkyv_naJAAZNMZjJhWwL8HMlDn87zY","gid":"251729970"},{"num":"14","name":"Seattle: South Center","sheetId":"19ktdQvexkLirs4FqhccFkp5xqqdxiD7-InIcNMzL1ag","gid":"1383130475"},{"num":"15","name":"NYC: Times Square","sheetId":"1Pv0_XP6jI5s7loG7dmV2oO_lAfZvFdet-G90TxwqUVM","gid":"1484885040"},{"num":"16","name":"Seattle: Downtown","sheetId":"1ZaQOLMqV3SkxfDSJXTE8y3XtsxOr7fVYs2otmU7-mRs","gid":"208495477"},{"num":"17","name":"Las Vegas: Area15","sheetId":"1gE2Vf2fPmaY6siS6b25D8DlxBbNlcwIsT9Ms09yrVLA","gid":"1112229375"},{"num":"18","name":"Murray","sheetId":"1EEBbIPeK-gzAhKQAN48awB6gthcxspZKL8zpdQSk35Q","gid":"680307207"},{"num":"19","name":"Birmingham","sheetId":"12m81_v1s61mppS0ItHanwvUIsWQNqjIMypqbAZ3agnA","gid":"2042017858"},{"num":"20","name":"Orlando","sheetId":"14PRLBxD4MtfoeCf-LnR4wIFRtlvqOw0S45Bh1eZyM3c","gid":"465235696"},{"num":"21","name":"Schaumburg","sheetId":"19vZp3VtWEV6tzIupGSWL1ewOB2ln-dvCO7qAGiF23jo","gid":"45122968"},{"num":"22","name":"Atlanta: The Battery","sheetId":"16YdxFW1Gl9X6iZXRQq6s6LQN867N8UWMJ60Ki3E2jgM","gid":"1337874338"},{"num":"23","name":"Hanover","sheetId":"15nMitCnaPOJDHiNoKpqdwENwGFzoEsTqSKAQRhaKsBA","gid":"1171970592"},{"num":"24","name":"Panama City Beach","sheetId":"1rIzo1Pyq9dyf4L7hG03eVUrtB01kJcEluMoVCNfHkvg","gid":"2126606748"},{"num":"26","name":"Richmond","sheetId":"1FfdQZpoXSfRMiBAkQBU37kEKxoRxDa5bpQj6SlT4Okk","gid":"46231595"},{"num":"27","name":"Canoga Park","sheetId":"1H6rXHcmfGKARHuna9WQ2U0knRY4Dwgsv4-qIyuoimgY","gid":"208495477"},{"num":"28","name":"Dania Beach","sheetId":"","gid":""}],"hosts":[{"first":"A'Tonal","last":"Torres","stores":["13"]},{"first":"Aaron","last":"Brown","stores":["19"]},{"first":"Aaron","last":"Monge","stores":["04"]},{"first":"Abby","last":"Maciaszek","stores":["21"]},{"first":"Addison","last":"Burns","stores":["06"]},{"first":"Admin","last":"GBGS SSC","stores":["14"]},{"first":"Admin","last":"New Jersey","stores":["10"]},{"first":"Admin","last":"TEG","stores":["12"]},{"first":"Admin","last":"The Battery Atlanta","stores":["22"]},{"first":"Aiden","last":"Call","stores":["02"]},{"first":"Aiden","last":"Demers","stores":["17"]},{"first":"Akell","last":"Cruz","stores":["15"]},{"first":"Alan","last":"Goodman","stores":["19"]},{"first":"Albee","last":"Horowitz","stores":["26"]},{"first":"Alec","last":"Deske","stores":["15"]},{"first":"Alex","last":"David","stores":["04"]},{"first":"Alex","last":"Grubard","stores":["10"]},{"first":"Alex","last":"Trussler","stores":["01"]},{"first":"Alexander","last":"Ruiz","stores":["10"]},{"first":"Alexis","last":"Evans","stores":["17"]},{"first":"Ali","last":"Lenger","stores":["12"]},{"first":"Alice","last":"Bain","stores":["06"]},{"first":"Alley","last":"Correa","stores":["03"]},{"first":"Alyssia","last":"Gamez Scriven","stores":["22"]},{"first":"Amber","last":"Earl","stores":["18"]},{"first":"Anaiah","last":"Belk","stores":["12"]},{"first":"Andreas","last":"Forbes","stores":["22"]},{"first":"Andrew","last":"Castillo","stores":["05"]},{"first":"Angel","last":"Mozingo","stores":["20"]},{"first":"Annabelle","last":"DeLorge","stores":["02"]},{"first":"Anthony","last":"Bullock","stores":["26"]},{"first":"Anthony","last":"Calbeto","stores":["17"]},{"first":"Anthony","last":"Saylor","stores":["22"]},{"first":"Anvi","last":"Batra","stores":["08"]},{"first":"Aria","last":"Meffe","stores":["15"]},{"first":"Ariyana","last":"Richardson","stores":["15"]},{"first":"Asher","last":"Boney","stores":["07"]},{"first":"Aubrey","last":"Senese","stores":["06"]},{"first":"Austin","last":"Graham","stores":["21"]},{"first":"Austin","last":"Kent","stores":["12"]},{"first":"Ayla","last":"Carda","stores":["14","16"]},{"first":"Bea","last":"Mullins","stores":["20"]},{"first":"Bee","last":"Caal","stores":["08"]},{"first":"Belen","last":"Munoz","stores":["02"]},{"first":"Ben","last":"Biazo","stores":["21"]},{"first":"Ben","last":"Bush","stores":["24"]},{"first":"Ben","last":"Trowell","stores":["07"]},{"first":"Billie","last":"Barboza","stores":["12"]},{"first":"Brandon","last":"Sparks","stores":["14","16"]},{"first":"Brandon","last":"Stubbs","stores":["06","21"]},{"first":"Bre","last":"Brown","stores":["08","23"]},{"first":"Brian","last":"Bauch","stores":["03"]},{"first":"Brian","last":"Dunn","stores":["12"]},{"first":"Brianna","last":"Schapiro","stores":["11"]},{"first":"Britney","last":"Perry","stores":["08"]},{"first":"Brittany","last":"Shires","stores":["08"]},{"first":"Bryan","last":"Prest","stores":["04"]},{"first":"Bryony","last":"Schnell","stores":["05"]},{"first":"Bryson","last":"Morgan","stores":["07"]},{"first":"Caden","last":"Parks","stores":["12"]},{"first":"Cadence","last":"Lund","stores":["18"]},{"first":"Cady","last":"Hughes","stores":["15"]},{"first":"Caleb","last":"David","stores":["16"]},{"first":"Caliber","last":"Erickson","stores":["06"]},{"first":"Calvin","last":"Ross Jr","stores":["12"]},{"first":"Cam","last":"Jackson","stores":["22"]},{"first":"Cameron","last":"Bates","stores":["19"]},{"first":"Carl","last":"Londono","stores":["10"]},{"first":"Carley","last":"Sorensen","stores":["14"]},{"first":"Caroline","last":"Kirby","stores":["16"]},{"first":"Cassidy","last":"Gunter","stores":["26"]},{"first":"CB","last":"Bayani","stores":["22"]},{"first":"Charlie","last":"Meffe","stores":["15"]},{"first":"Charlie","last":"Reilly","stores":["22"]},{"first":"Charlie","last":"Sticha","stores":["06"]},{"first":"Chesmon","last":"Evans","stores":["20"]},{"first":"Chey","last":"Tam","stores":["04"]},{"first":"Christian","last":"Howe","stores":["11"]},{"first":"Christopher","last":"Beers","stores":["09"]},{"first":"CJ","last":"Taylor","stores":["02"]},{"first":"Claire","last":"Elliot","stores":["08"]},{"first":"Cody","last":"Hinman","stores":["18"]},{"first":"Colby","last":"Anthony","stores":["04","13"]},{"first":"Cole","last":"Allen","stores":["26"]},{"first":"Cole","last":"Frederick","stores":["07"]},{"first":"Cole","last":"Pruitt","stores":["08"]},{"first":"Cole","last":"Schjott","stores":["24"]},{"first":"Connor","last":"Kelsey","stores":["11"]},{"first":"Cooper","last":"Everhart","stores":["08"]},{"first":"Crisbel","last":"Flores","stores":["10"]},{"first":"Dalton","last":"Henderson","stores":["02"]},{"first":"Dan","last":"Gorr","stores":["21"]},{"first":"Dani","last":"Pongiglione","stores":["04"]},{"first":"Daniel","last":"Bejarano","stores":["21"]},{"first":"Daniel","last":"Binet","stores":["04"]},{"first":"Daniel","last":"Schurz","stores":["01"]},{"first":"Danny","last":"Mellado Mota","stores":["15"]},{"first":"Dario","last":"Prioleau","stores":["23"]},{"first":"David","last":"Emanuel","stores":["23"]},{"first":"David","last":"Trowbridge","stores":["18"]},{"first":"Deni","last":"Proto","stores":["16"]},{"first":"Dominique","last":"Carrington","stores":["23"]},{"first":"Donnell","last":"James","stores":["19","26"]},{"first":"Donta","last":"Paul","stores":["23"]},{"first":"Drake","last":"Cunningham","stores":["15"]},{"first":"Ebony","last":"Mosley","stores":["10"]},{"first":"Edwing","last":"Matos","stores":["17"]},{"first":"Eli","last":"Mojica","stores":["08"]},{"first":"Elia","last":"Mimikakis","stores":["08"]},{"first":"Elio","last":"Garcia","stores":["04"]},{"first":"Eliyah","last":"Knight","stores":["03"]},{"first":"Elizabeth","last":"Murray","stores":["15"]},{"first":"Ellis","last":"McCurdy","stores":["12"]},{"first":"Elyse","last":"Nicolas","stores":["08"]},{"first":"Emily","last":"Pich","stores":["05"]},{"first":"Emily","last":"Poll","stores":["22"]},{"first":"Emma","last":"McLucas","stores":["23"]},{"first":"Erik","last":"Huff","stores":["19"]},{"first":"Ethan","last":"Hatfield","stores":["22"]},{"first":"Ethan","last":"Morse","stores":["11"]},{"first":"Ethan","last":"Sarphie","stores":["15"]},{"first":"Ethan","last":"Sweeney","stores":["23"]},{"first":"Evelyn","last":"Conner","stores":["09"]},{"first":"Fabian","last":"Mier","stores":["17"]},{"first":"Fletcher","last":"Moore","stores":["09"]},{"first":"Franz","last":"Cherek","stores":["24"]},{"first":"Frederick","last":"Todd","stores":["02"]},{"first":"Gabby","last":"Robinson","stores":["07"]},{"first":"Gabo","last":"Morais","stores":["15"]},{"first":"Gabriel","last":"Hanley","stores":["15"]},{"first":"Gage","last":"Miller","stores":["07"]},{"first":"Garrett","last":"Boettger","stores":["23"]},{"first":"Garrett","last":"Mayberry","stores":["06"]},{"first":"GBGS","last":"Admin","stores":["15"]},{"first":"Genevieve","last":"Rogers","stores":["15"]},{"first":"George","last":"Livingston","stores":["01"]},{"first":"Gianna","last":"Brooks","stores":["08"]},{"first":"Gino","last":"Scarfone","stores":["17"]},{"first":"Giovanni","last":"Bailey","stores":["06"]},{"first":"Grace","last":"Norton","stores":["18"]},{"first":"Grant","last":"Cambron","stores":["17"]},{"first":"Griffin","last":"Adam","stores":["23"]},{"first":"Hannah","last":"Okosisi","stores":["09"]},{"first":"Harold","last":"Cioffi","stores":["21"]},{"first":"Harper","last":"Smith","stores":["16"]},{"first":"Harry","last":"Edwards","stores":["05"]},{"first":"Haydn","last":"Floros","stores":["23"]},{"first":"Heily","last":"Buford","stores":["05"]},{"first":"Henry","last":"Adams","stores":["06"]},{"first":"Henry","last":"Grogan","stores":["03"]},{"first":"Henry","last":"McCarter","stores":["11"]},{"first":"Henry","last":"Russell","stores":["04"]},{"first":"Isaiah","last":"McDonald","stores":["15"]},{"first":"Isiah","last":"Kidd","stores":["20","26"]},{"first":"J.R.","last":"McGonigle","stores":["04"]},{"first":"Jabari","last":"Taylor","stores":["11"]},{"first":"Jace","last":"Ceyanes","stores":["05"]},{"first":"Jack","last":"Marsh","stores":["18"]},{"first":"Jackie","last":"Hee","stores":["11"]},{"first":"Jackson","last":"Rummler","stores":["06"]},{"first":"Jacob","last":"Cordano","stores":["04"]},{"first":"Jaiden","last":"Bridges","stores":["02"]},{"first":"James","last":"Ramey","stores":["23"]},{"first":"Jamil","last":"Tate","stores":["08"]},{"first":"JaNya","last":"Saygbay","stores":["02"]},{"first":"Jared","last":"Pike","stores":["05"]},{"first":"Jared","last":"Smith","stores":["10"]},{"first":"Jarod","last":"Marcil","stores":["20"]},{"first":"Jax","last":"Hawkins","stores":["02"]},{"first":"Jay","last":"Perez","stores":["10"]},{"first":"jay","last":"reid","stores":["12"]},{"first":"Jaydin","last":"Daniels","stores":["18"]},{"first":"Jaylen","last":"Ramirez","stores":["26"]},{"first":"Jean-Carlo","last":"Macias","stores":["17"]},{"first":"Jennifer","last":"Rodriguez","stores":["02"]},{"first":"Jennifer","last":"Santiago","stores":["03"]},{"first":"Jeron","last":"Jones","stores":["24"]},{"first":"Jerson","last":"Salinas","stores":["10"]},{"first":"Jesmila","last":"Davis","stores":["04"]},{"first":"Jessica","last":"Delacruz","stores":["23"]},{"first":"Jessica","last":"Dickey","stores":["21"]},{"first":"Jiliana","last":"Ceballos","stores":["19"]},{"first":"Jill","last":"Helding","stores":["08","23"]},{"first":"Jillian","last":"Schmitz","stores":["23"]},{"first":"Jocelyn","last":"Urbano","stores":["27"]},{"first":"Jocelyn","last":"Urvano","stores":["24"]},{"first":"Jodie","last":"Lloyd","stores":["06"]},{"first":"Joe","last":"Rothstein","stores":["21"]},{"first":"John","last":"Chaneski","stores":["15"]},{"first":"John","last":"Mauldin","stores":["01"]},{"first":"Jomari","last":"Estaris","stores":["10"]},{"first":"Jon","last":"Rogers","stores":["05"]},{"first":"Jonathan","last":"O'Neal","stores":["21"]},{"first":"Jordan","last":"Henderson","stores":["14","16"]},{"first":"Jose","last":"Lozano","stores":["04"]},{"first":"Joseph","last":"Paredes","stores":["13"]},{"first":"Josh","last":"Brackett","stores":["07"]},{"first":"Josh","last":"Brown","stores":["05"]},{"first":"Josh","last":"Brunson","stores":["24"]},{"first":"Josh","last":"Cassaday","stores":["24"]},{"first":"Josh","last":"Harris","stores":["12"]},{"first":"Joyous","last":"Celestine","stores":["12"]},{"first":"Julia","last":"Boyd","stores":["02"]},{"first":"Justin","last":"Baker","stores":["14","16"]},{"first":"Justin","last":"Hambey","stores":["24","28"]},{"first":"Kai","last":"Donaldson","stores":["07"]},{"first":"Kali","last":"Swanson","stores":["04"]},{"first":"Katherine","last":"Coleman","stores":["19"]},{"first":"Kaze","last":"Johns","stores":["24"]},{"first":"KC","last":"Pepple","stores":["12"]},{"first":"Keira","last":"Blanco","stores":["06"]},{"first":"Kevonnie","last":"Gibbs","stores":["14"]},{"first":"Khalid","last":"Overall","stores":["12"]},{"first":"Kiera","last":"Parson","stores":["23"]},{"first":"Kindall","last":"Loveless","stores":["17"]},{"first":"Kurt","last":"Fernandez","stores":["01"]},{"first":"Kyle","last":"Hardin","stores":["22"]},{"first":"Kyler","last":"Liddell","stores":["05"]},{"first":"Landon","last":"Knight","stores":["19"]},{"first":"Layla","last":"Clayton","stores":["08"]},{"first":"Laylah","last":"Evans","stores":["14"]},{"first":"Leonard","last":"Helding","stores":["08","23"]},{"first":"Lexi","last":"Lyle","stores":["01"]},{"first":"Lexy","last":"Kupsch","stores":["03"]},{"first":"Lloyd","last":"Masika","stores":["10"]},{"first":"Lolly","last":"Cazares","stores":["13"]},{"first":"Lucas","last":"Johnson","stores":["22","23","24","26","28"]},{"first":"Lucy","last":"Bone","stores":["04"]},{"first":"Lukas","last":"Sheves","stores":["12"]},{"first":"Luke","last":"Moglia","stores":["26"]},{"first":"Lyle","last":"Hoffmeister","stores":["03"]},{"first":"Lynorque","last":"Robinson","stores":["06"]},{"first":"Maddie","last":"Sledge","stores":["15"]},{"first":"Madison","last":"Pennington","stores":["24"]},{"first":"Maggie","last":"Huntsman","stores":["18"]},{"first":"Makayla","last":"Chavarria","stores":["10"]},{"first":"Maranda","last":"Foreman","stores":["22"]},{"first":"Mariah","last":"Downs","stores":["09"]},{"first":"Marshall","last":"Manago","stores":["14"]},{"first":"Mary","last":"LaMere","stores":["14","16","21"]},{"first":"Mateo","last":"Acevedo","stores":["10"]},{"first":"Matthew","last":"Eubank","stores":["19"]},{"first":"Matthew","last":"Kalb","stores":["01"]},{"first":"Maxine","last":"Haber","stores":["09"]},{"first":"Meg","last":"Moricca","stores":["04","13"]},{"first":"Mela","last":"Bolouvi","stores":["10"]},{"first":"Melanie","last":"Nina","stores":["10"]},{"first":"Melinda","last":"Thompson","stores":["22"]},{"first":"Meya","last":"McMurray","stores":["26"]},{"first":"Michael","last":"Davis","stores":["24"]},{"first":"Michael","last":"Jefferson","stores":["08","23"]},{"first":"Michael","last":"Sangregorio","stores":["10"]},{"first":"Milo","last":"Manning","stores":["26"]},{"first":"Mya","last":"Jewison","stores":["03"]},{"first":"Myles","last":"China","stores":["22"]},{"first":"Natali","last":"Medrano","stores":["08"]},{"first":"Nate","last":"Jenkins","stores":["22"]},{"first":"Nathen","last":"Marlow","stores":["24"]},{"first":"Nazareth","last":"Collins","stores":["17"]},{"first":"Neil","last":"Kirby","stores":["26"]},{"first":"Nicholas","last":"Dipuma","stores":["10"]},{"first":"Nick","last":"Pinelli","stores":["22"]},{"first":"Nick","last":"Stephenson","stores":["09"]},{"first":"Nico","last":"Cardinale","stores":["12"]},{"first":"Noah","last":"Chirinos","stores":["02"]},{"first":"Noah","last":"Christenson","stores":["03"]},{"first":"Nova","last":"Gaudez","stores":["15"]},{"first":"Nova","last":"Michaud","stores":["17"]},{"first":"Olivia","last":"Potter","stores":["11"]},{"first":"Owen","last":"Miller","stores":["15"]},{"first":"Oz","last":"Hancock","stores":["06"]},{"first":"Parsa","last":"Ramezanpour","stores":["02"]},{"first":"Pat","last":"Huynh","stores":["13"]},{"first":"Paxxton","last":"Rehman","stores":["06"]},{"first":"Peter","last":"Guidry","stores":["12"]},{"first":"Peyton","last":"Tomlan","stores":["14","16"]},{"first":"Phillip","last":"Edwards","stores":["07"]},{"first":"Princess","last":"Ravelo","stores":["13"]},{"first":"Quinn","last":"Timmins","stores":["15"]},{"first":"Reece","last":"Collie","stores":["18"]},{"first":"Reese","last":"Morales","stores":["06"]},{"first":"Reggie","last":"Clark","stores":["08"]},{"first":"Remus","last":"Staeheli","stores":["03"]},{"first":"Robyn","last":"Davenport","stores":["13"]},{"first":"Rodney","last":"Anderson","stores":["13"]},{"first":"Ross","last":"Levy","stores":["20"]},{"first":"Ryan","last":"Ford","stores":["02"]},{"first":"Ryan","last":"Graham","stores":["14","16","21"]},{"first":"Rylee","last":"Castro","stores":["13"]},{"first":"Sam","last":"Cancel","stores":["15"]},{"first":"Sam","last":"Howell","stores":["15"]},{"first":"Samuel","last":"Lusty","stores":["01"]},{"first":"Sarah","last":"Nicholson","stores":["08"]},{"first":"Saraya","last":"Bailey","stores":["15"]},{"first":"Sasha","last":"Rudeshko","stores":["04"]},{"first":"Sawney","last":"Arnett","stores":["14"]},{"first":"Scarlette","last":"Romero","stores":["17"]},{"first":"Sergio","last":"Carrillo","stores":["20"]},{"first":"Shane","last":"Coleman","stores":["19"]},{"first":"Shannon","last":"Ryan","stores":["15"]},{"first":"Shelby","last":"Buford","stores":["23"]},{"first":"Sheldon","last":"Chu","stores":["11"]},{"first":"Sierra","last":"Moore","stores":["14"]},{"first":"Siggy","last":"Edmond","stores":["26"]},{"first":"Sophia","last":"Merchant","stores":["06"]},{"first":"Sora","last":"Roberts","stores":["11"]},{"first":"Stariana","last":"Smith","stores":["18"]},{"first":"Suhaana","last":"Mian","stores":["02"]},{"first":"Summer","last":"Scroggins","stores":["19"]},{"first":"Sunshine","last":"Rawlinson","stores":["20"]},{"first":"T.","last":"Murphy","stores":["24"]},{"first":"Tate","last":"McFlurry","stores":["16"]},{"first":"Tatiana","last":"Parker","stores":["01"]},{"first":"TEG","last":"Admin","stores":["15"]},{"first":"TEG","last":"GES","stores":["11"]},{"first":"TEG","last":"Seattle Downtown","stores":["16"]},{"first":"TEG","last":"Seattle South","stores":["14"]},{"first":"The Escape Game","last":"GES","stores":["17"]},{"first":"Thomas","last":"Boyce","stores":["22"]},{"first":"Thomas","last":"Jenkins","stores":["18"]},{"first":"Tim","last":"Glancy","stores":["09"]},{"first":"TJ","last":"John","stores":["15"]},{"first":"Toni","last":"Kramer","stores":["21"]},{"first":"Travis","last":"Hill","stores":["02"]},{"first":"Trey","last":"Lyle","stores":["26"]},{"first":"Trinity","last":"Anderson","stores":["19"]},{"first":"Troy","last":"Scalf","stores":["01"]},{"first":"Tuesday","last":"Miltich","stores":["03"]},{"first":"Ty","last":"Harris","stores":["12"]},{"first":"Tyler","last":"Holz","stores":["08"]},{"first":"Valenicia","last":"Eberhardt","stores":["06"]},{"first":"Veronica","last":"Paramo","stores":["17"]},{"first":"Vince","last":"Cuna","stores":["15"]},{"first":"Viola","last":"Citizen","stores":["16"]},{"first":"Violet","last":"Camou","stores":["17"]},{"first":"Vivian","last":"Marin","stores":["13"]},{"first":"William","last":"Gomez","stores":["22"]},{"first":"Wilson","last":"Lindberg","stores":["03"]},{"first":"Xavier","last":"Pickens","stores":["02"]},{"first":"Ynez","last":"Abril","stores":["02"]},{"first":"Zach","last":"Stone","stores":["20"]},{"first":"Zedrick","last":"Cabrera","stores":["14"]},{"first":"Zee","last":"Busch","stores":["01"]}]}</script>
+
 <script>
   /* =========================================================
-     VIDEO SOURCES — paste each video's YouTube link (or ID)
-     between the quotes below. Any of these forms works:
-       https://youtu.be/VIDEOID
-       https://www.youtube.com/watch?v=VIDEOID
-       https://www.youtube.com/embed/VIDEOID
-       VIDEOID
-     Set each video to "Unlisted" (or Public) in YouTube so it embeds.
+     VIDEO SOURCES — YouTube link or ID for each video.
      ========================================================= */
   const VIDEO_SOURCES = {
     "rules":       "https://youtu.be/srSM0A_HX0o",
@@ -367,6 +453,13 @@
     "smart":       "https://youtu.be/g1oZG6Or0nk",
     "hungry":      "https://youtu.be/qBgIQ9PcdYs"
   };
+
+  /* Central Apps Script endpoint. Receives {spreadsheetId,gid,name,...} and
+     advances that store's passport dropdown. See README-DEPLOY.md. */
+  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
+
+  /* Admin passcode — change this to whatever you like. */
+  const ADMIN_PASSCODE = "teg-admin";
 
   const videos = [
     {key:"rules",       title:"Rules Video",     tag:"Start Here", cls:"intro", thumb:"thumbnails/Rules.jpg",         desc:"The official rules of Mystery Menu."},
@@ -383,9 +476,12 @@
     {url:"https://docs.google.com/presentation/d/125c3IZnlyC7Lze8bgfVtfV2Huo2c6lBt0aqoK5uwUAQ/edit?slide=id.g2bfe17fa51e_0_486#slide=id.g2bfe17fa51e_0_486", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
   ];
 
-  const enc = f => f.split('/').map(encodeURIComponent).join('/');
+  /* Store + host data */
+  let SITE_DATA = JSON.parse(document.getElementById('site-data').textContent);
 
-  // Pull the YouTube video ID out of any link form (or accept a bare ID)
+  const enc = f => f.split('/').map(encodeURIComponent).join('/');
+  const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
   function ytId(src){
     if(!src) return "";
     let m = src.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
@@ -394,6 +490,7 @@
     return m ? src : "";
   }
 
+  /* ---------- Render video + doc cards ---------- */
   const vGrid = document.getElementById('videoGrid');
   videos.forEach((v,i)=>{
     const c = document.createElement('div');
@@ -432,17 +529,17 @@
     dGrid.appendChild(c);
   });
 
+  /* ---------- Modals ---------- */
   const vModal=document.getElementById('videoModal'),
         player=document.getElementById('player'),
         pModal=document.getElementById('pdfModal'),
-        frame=document.getElementById('pdfFrame');
+        frame=document.getElementById('pdfFrame'),
+        aModal=document.getElementById('adminModal');
 
   function openVideo(key,title){
     document.getElementById('videoTitle').textContent = title;
     const id = ytId(VIDEO_SOURCES[key]);
-    player.src = id
-      ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`
-      : "";
+    player.src = id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1` : "";
     vModal.classList.add('open');
   }
   function closeVideo(){ player.src=''; vModal.classList.remove('open'); }
@@ -464,6 +561,7 @@
   const signoff = document.getElementById('signoff');
   const confirmCheck = document.getElementById('confirmCheck');
   const submitBtn = document.getElementById('submitBtn');
+  const storeSelect = document.getElementById('storeSelect');
   const hostSelect = document.getElementById('hostSelect');
   const note = document.getElementById('signoffNote');
   const progressCount = document.getElementById('progressCount');
@@ -476,19 +574,68 @@
     progressCount.textContent = viewed.size;
     refreshGate();
   }
+  function selectedStore(){ return SITE_DATA.stores.find(s=>s.num===storeSelect.value); }
   function refreshGate(){
     const allViewed = viewed.size >= totalItems;
     signoff.classList.toggle('locked', !allViewed);
-    submitBtn.disabled = !(allViewed && confirmCheck.checked);
+    const st = selectedStore();
+    const ready = allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st && st.sheetId;
+    submitBtn.disabled = !ready;
   }
   confirmCheck.addEventListener('change', refreshGate);
 
+  /* ---------- Store + host dropdowns ---------- */
+  function storesSorted(){ return [...SITE_DATA.stores].sort((a,b)=>parseInt(a.num,10)-parseInt(b.num,10)); }
+
+  function populateStores(){
+    const cur = storeSelect.value;
+    storeSelect.innerHTML = '<option value="" disabled selected>Select your store…</option>';
+    storesSorted().forEach(s=>{
+      const o=document.createElement('option');
+      o.value=s.num; o.textContent=`${s.num} - ${s.name}`;
+      storeSelect.appendChild(o);
+    });
+    if(cur && SITE_DATA.stores.some(s=>s.num===cur)) storeSelect.value=cur;
+  }
+
+  function populateHosts(){
+    const num = storeSelect.value;
+    if(!num){
+      hostSelect.disabled = true;
+      hostSelect.innerHTML = '<option value="" disabled selected>Select your store first…</option>';
+      refreshGate(); return;
+    }
+    const list = SITE_DATA.hosts.filter(h=>h.stores.includes(num))
+      .sort((a,b)=> a.first.toLowerCase().localeCompare(b.first.toLowerCase())
+                 || a.last.toLowerCase().localeCompare(b.last.toLowerCase()));
+    hostSelect.disabled = false;
+    hostSelect.innerHTML = '<option value="" disabled selected>Select your name…</option>';
+    list.forEach(h=>{
+      const o=document.createElement('option');
+      o.value=`${h.first} ${h.last}`; o.textContent=`${h.first} ${h.last}`;
+      hostSelect.appendChild(o);
+    });
+    refreshGate();
+  }
+
+  storeSelect.addEventListener('change', ()=>{
+    const st = selectedStore();
+    if(st && !st.sheetId){
+      note.textContent = 'This store has no sheet linked yet — add its link in Admin before sign-offs can be recorded.';
+      note.className = 'signoff-note warn';
+    } else { note.textContent=''; note.className='signoff-note'; }
+    populateHosts();
+  });
+  hostSelect.addEventListener('change', refreshGate);
+
+  /* ---------- Reset ---------- */
   function resetPage(){
     viewed.clear();
     document.querySelectorAll('.card.done, .doc-card.done').forEach(el=>el.classList.remove('done'));
     progressCount.textContent = 0;
     confirmCheck.checked = false;
-    hostSelect.selectedIndex = 0;
+    storeSelect.selectedIndex = 0;
+    populateHosts();
     note.textContent = '';
     note.className = 'signoff-note';
     submitBtn.disabled = true;
@@ -496,34 +643,26 @@
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
-  /* ---------- Sign-off ---------- */
-  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
-
-  const hosts = [
-    "Kurt Fernandez","Kayla Griffey","Matthew Kalb",
-    "Lexi Lyle","John Mauldin","Troy Scalf","Daniel Schurz",
-    "Tasha Wade","Tatiana Parker","Alex Trussler","Houston Vick","Jansen Sharp"
-  ];
-  hosts.forEach(name=>{
-    const o=document.createElement('option');
-    o.value=name;o.textContent=name;hostSelect.appendChild(o);
-  });
-
-  submitBtn.addEventListener('click',async ()=>{
+  /* ---------- Submit ---------- */
+  submitBtn.addEventListener('click', async ()=>{
     if(submitBtn.disabled) return;
-    const host=hostSelect.value;
-    if(!host){
-      note.textContent='Please select your name before submitting.';
-      note.className='signoff-note warn'; return;
+    const st = selectedStore();
+    const host = hostSelect.value;
+    if(!st || !host){
+      note.textContent='Please pick your store and name first.'; note.className='signoff-note warn'; return;
     }
-    if(!ENDPOINT_URL){
-      note.textContent='Sign-off endpoint not set up yet.';
-      note.className='signoff-note warn'; return;
+    if(!st.sheetId){
+      note.textContent='This store has no sheet linked yet. Add its link in Admin.'; note.className='signoff-note warn'; return;
     }
     const payload={
-      name: host, confirmed: true,
-      confirmationText: "I have watched and reviewed ALL of the material on this page and am ready to begin in-studio training / sign-off.",
-      submittedAt: new Date().toISOString(), game: "Mystery Menu"
+      spreadsheetId: st.sheetId,
+      gid: st.gid,
+      store: `${st.num} - ${st.name}`,
+      storeNum: st.num,
+      name: host,
+      confirmed: true,
+      submittedAt: new Date().toISOString(),
+      game: "Mystery Menu"
     };
     submitBtn.disabled=true;
     note.textContent='Submitting…'; note.className='signoff-note';
@@ -533,15 +672,133 @@
         headers:{'Content-Type':'text/plain;charset=utf-8'},
         body:JSON.stringify(payload)
       });
-      note.textContent=`✓ Sign-off recorded for ${host}. Resetting for the next host…`;
+      note.textContent=`✓ Sign-off recorded for ${host} (${st.num} - ${st.name}). Resetting for the next host…`;
       note.className='signoff-note ok';
-      setTimeout(resetPage, 2500);
+      setTimeout(resetPage, 2600);
     }catch(err){
-      note.textContent='Could not reach the sign-off sheet. Check your connection and try again.';
+      note.textContent='Could not reach the sign-off service. Check your connection and try again.';
       note.className='signoff-note warn'; submitBtn.disabled=false;
     }
   });
 
+  /* ---------- Admin ---------- */
+  function openAdmin(){ aModal.classList.add('open'); }
+  function closeAdmin(){ aModal.classList.remove('open'); }
+  aModal.addEventListener('click',e=>{ if(e.target===aModal) closeAdmin(); });
+
+  function tryUnlock(){
+    if(document.getElementById('adminPass').value === ADMIN_PASSCODE){
+      document.getElementById('adminGate').style.display='none';
+      document.getElementById('adminBody').style.display='block';
+      document.getElementById('exportBar').style.display='flex';
+      renderAdminStores(); renderAdminHosts();
+    } else {
+      document.getElementById('gateMsg').textContent='Incorrect passcode.';
+    }
+  }
+
+  function renderAdminStores(){
+    const tb=document.getElementById('adminStores'); tb.innerHTML='';
+    storesSorted().forEach(s=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${esc(s.num)}</td><td>${esc(s.name)}</td>
+        <td>${s.sheetId?'<span class="pill-linked">linked</span>':'<span class="pill-nolink">no link</span>'}</td>
+        <td style="text-align:right;"><button class="mini del">Remove</button></td>`;
+      tr.querySelector('button').onclick=()=>removeStore(s.num);
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderAdminHosts(){
+    const q=(document.getElementById('hostSearch').value||'').toLowerCase().trim();
+    const tb=document.getElementById('adminHosts'); tb.innerHTML='';
+    SITE_DATA.hosts
+      .map((h,idx)=>({h,idx}))
+      .filter(({h})=>!q || (h.first+' '+h.last).toLowerCase().includes(q))
+      .sort((a,b)=>a.h.first.toLowerCase().localeCompare(b.h.first.toLowerCase())
+                || a.h.last.toLowerCase().localeCompare(b.h.last.toLowerCase()))
+      .forEach(({h,idx})=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${esc(h.first)}</td><td>${esc(h.last)}</td><td>${esc(h.stores.join(', '))}</td>
+          <td style="text-align:right;"><button class="mini del">Remove</button></td>`;
+        tr.querySelector('button').onclick=()=>removeHost(idx);
+        tb.appendChild(tr);
+      });
+  }
+
+  function parseSheet(url){
+    const sid=(url.match(/\/d\/([A-Za-z0-9_-]+)/)||[])[1]||"";
+    const gid=(url.match(/[#&?]gid=(\d+)/)||[])[1]||"";
+    return {sheetId:sid, gid:gid};
+  }
+  function pad2(n){ n=String(n).trim(); return n.length===1?('0'+n):n; }
+
+  function addStore(){
+    const num=pad2(document.getElementById('newStoreNum').value);
+    const name=document.getElementById('newStoreName').value.trim();
+    const url=document.getElementById('newStoreUrl').value.trim();
+    if(!num || !name){ alert('Store number and name are required.'); return; }
+    if(SITE_DATA.stores.some(s=>s.num===num)){ alert('A store with number '+num+' already exists.'); return; }
+    const {sheetId,gid}=parseSheet(url);
+    SITE_DATA.stores.push({num,name,sheetId,gid});
+    document.getElementById('newStoreNum').value='';
+    document.getElementById('newStoreName').value='';
+    document.getElementById('newStoreUrl').value='';
+    afterDataChange();
+  }
+  function removeStore(num){
+    if(!confirm('Remove store '+num+'? Hosts will also lose this store assignment.')) return;
+    SITE_DATA.stores = SITE_DATA.stores.filter(s=>s.num!==num);
+    SITE_DATA.hosts.forEach(h=>{ h.stores = h.stores.filter(n=>n!==num); });
+    afterDataChange();
+  }
+  function addHost(){
+    const first=document.getElementById('newHostFirst').value.trim();
+    const last=document.getElementById('newHostLast').value.trim();
+    const raw=document.getElementById('newHostStores').value.trim();
+    if(!first || !last){ alert('First and last name are required.'); return; }
+    const nums=raw.split(',').map(x=>pad2(x)).filter(x=>x && SITE_DATA.stores.some(s=>s.num===x));
+    if(!nums.length){ alert('Enter at least one valid store number (e.g. 01,07).'); return; }
+    SITE_DATA.hosts.push({first,last,stores:nums});
+    document.getElementById('newHostFirst').value='';
+    document.getElementById('newHostLast').value='';
+    document.getElementById('newHostStores').value='';
+    afterDataChange();
+  }
+  function removeHost(idx){
+    const h=SITE_DATA.hosts[idx];
+    if(!h) return;
+    if(!confirm('Remove '+h.first+' '+h.last+'?')) return;
+    SITE_DATA.hosts.splice(idx,1);
+    afterDataChange();
+  }
+  function afterDataChange(){
+    renderAdminStores(); renderAdminHosts();
+    populateStores(); populateHosts();
+  }
+
+  async function exportSite(){
+    try{
+      const res = await fetch(location.href,{cache:'no-store'});
+      if(!res.ok) throw new Error('fetch failed');
+      let html = await res.text();
+      const json = JSON.stringify(SITE_DATA);
+      html = html.replace(/(<script id="site-data" type="application\/json">)[\s\S]*?(<\/script>)/,
+        (m,p1,p2)=> p1 + json + p2);
+      const blob = new Blob([html],{type:'text/html'});
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='index.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    }catch(err){
+      alert('Export needs the page to be served over the web (your GitHub Pages URL). It can\'t read its own source when opened as a local file. Please open the live site and export from there.');
+    }
+  }
+
+  /* ---------- Init ---------- */
+  populateStores();
+  populateHosts();
   refreshGate();
 </script>
 </body>
