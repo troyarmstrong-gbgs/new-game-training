@@ -497,9 +497,15 @@
     c.className = 'card';
     c.dataset.key = 'video:'+v.key;
     c.onclick = ()=>{ markDone(c); openVideo(v.key, v.title); };
+    // Thumbnail auto-pulled from the video's own YouTube image (falls back
+    // maxres -> hq -> local file), so it always matches the current video.
+    const yt = ytId(VIDEO_SOURCES[v.key]);
+    const poster = yt ? `https://i.ytimg.com/vi/${yt}/maxresdefault.jpg` : enc(v.thumb);
+    const fallback = yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : enc(v.thumb);
     c.innerHTML = `
       <div class="thumb">
-        <img class="poster" src="${enc(v.thumb)}" alt="">
+        <img class="poster" src="${poster}" alt=""
+             onerror="this.onerror=null;this.src='${fallback}';">
         <span class="num">${i===0?'▶':i}</span>
         <span class="done-badge">✓</span>
         <div class="play"></div>
