@@ -428,6 +428,25 @@
             <button class="mini add" onclick="addHost()">Add host</button>
           </div>
           <p class="hint" style="margin-top:8px;">A host listed at multiple stores will appear in each. First-name spelling must match the name header on that store's passport tab.</p>
+
+          <div style="margin-top:18px;padding-top:16px;border-top:1px dashed var(--dark-stripe);">
+            <h4 style="margin-bottom:8px;">Replace ALL hosts from a CSV</h4>
+            <p class="hint" style="margin-bottom:10px;">
+              Upload a CSV with columns <b>First Name, Last Name, Stores</b> — the same
+              format your user export produces (Stores like
+              <code>01 - Nashville: Opry Mills (opry-mills) - HOST; 07 - Pigeon Forge (pigeon-forge) - MANAGER</code>).
+              This <b>replaces the entire host list</b> with the file's contents. Stores are left untouched.
+            </p>
+            <div class="admin-form">
+              <input type="file" id="hostCsv" accept=".csv,text/csv" class="admin-input" style="flex:1;min-width:220px;">
+              <button class="mini add" onclick="importHostsCsv()">Replace hosts from CSV</button>
+            </div>
+            <p class="hint" id="csvMsg" style="margin-top:10px;"></p>
+            <div class="admin-form" style="margin-top:6px;">
+              <button class="mini" style="background:var(--dark-stripe);color:#fff;" onclick="downloadHostsCsv()">⬇ Download current hosts (CSV)</button>
+              <span class="hint">Exports the current roster (First Name, Last Name, Stores) — same format the uploader accepts.</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="export-bar" id="exportBar" style="display:none;">
@@ -591,7 +610,16 @@
   confirmCheck.addEventListener('change', refreshGate);
 
   /* ---------- Store + host dropdowns ---------- */
-  function storesSorted(){ return [...SITE_DATA.stores].sort((a,b)=>parseInt(a.num,10)-parseInt(b.num,10)); }
+  // Sort store numbers: numeric ones ascending first, non-numeric (e.g. "HQ") last, alphabetical.
+  function cmpStoreNum(a,b){
+    var na=parseInt(a,10), nb=parseInt(b,10);
+    var aNum=!isNaN(na), bNum=!isNaN(nb);
+    if(aNum&&bNum) return na-nb;
+    if(aNum!==bNum) return aNum?-1:1;
+    a=String(a).toLowerCase(); b=String(b).toLowerCase();
+    return a<b?-1:a>b?1:0;
+  }
+  function storesSorted(){ return [...SITE_DATA.stores].sort((a,b)=>cmpStoreNum(a.num,b.num)); }
 
   function populateStores(){
     const cur = storeSelect.value;
@@ -781,6 +809,138 @@
   function afterDataChange(){
     renderAdminStores(); renderAdminHosts();
     populateStores(); populateHosts();
+  }
+
+  /* ---------- Replace all hosts from a CSV ---------- */
+  // Minimal RFC-4180-ish CSV parser (handles quotes, commas & newlines in quotes).
+  function parseCsv(text){
+    text = text.replace(/^﻿/, '');            // strip BOM
+    var rows=[], row=[], val='', inQ=false;
+    for(var i=0;i<text.length;i++){
+      var ch=text[i];
+      if(inQ){
+        if(ch==='"'){ if(text[i+1]==='"'){ val+='"'; i++; } else inQ=false; }
+        else val+=ch;
+      } else {
+        if(ch==='"') inQ=true;
+        else if(ch===','){ row.push(val); val=''; }
+        else if(ch==='\n'){ row.push(val); rows.push(row); row=[]; val=''; }
+        else if(ch==='\r'){ /* ignore */ }
+        else val+=ch;
+      }
+    }
+    if(val!=='' || row.length){ row.push(val); rows.push(row); }
+    return rows;
+  }
+
+  // Catch-all store for people with no store listed in the CSV.
+  var HQ_NUM='HQ', HQ_NAME='GBGS Brentwood/HQ';
+
+  // Escape a value for a CSV cell.
+  function csvCell(v){ v=String(v==null?'':v); return /[",\r\n]/.test(v) ? ('"'+v.replace(/"/g,'""')+'"') : v; }
+
+  // Download the current host roster as a CSV (re-importable by the uploader above).
+  function downloadHostsCsv(){
+    var byNum={}; SITE_DATA.stores.forEach(function(s){ byNum[s.num]=s; });
+    var sorted=[...SITE_DATA.hosts].sort(function(a,b){
+      return a.first.toLowerCase().localeCompare(b.first.toLowerCase())
+          || a.last.toLowerCase().localeCompare(b.last.toLowerCase());
+    });
+    var rows=[['First Name','Last Name','Stores']];
+    sorted.forEach(function(h){
+      var stores=(h.stores||[]).slice().sort(cmpStoreNum).map(function(n){
+        var s=byNum[n]; return s ? (s.num+' - '+s.name) : n;
+      }).join('; ');
+      rows.push([h.first, h.last, stores]);
+    });
+    var csv=rows.map(function(r){ return r.map(csvCell).join(','); }).join('\r\n');
+    var blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='mystery-menu-hosts.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  function importHostsCsv(){
+    var msg=document.getElementById('csvMsg');
+    var input=document.getElementById('hostCsv');
+    var file=input.files && input.files[0];
+    if(!file){ msg.textContent='Choose a CSV file first.'; msg.style.color='var(--yellow)'; return; }
+
+    var reader=new FileReader();
+    reader.onload=function(){
+      try{
+        var rows=parseCsv(String(reader.result));
+        if(!rows.length){ throw new Error('empty file'); }
+
+        // Locate columns by header (case-insensitive); fall back to D/E/J positions.
+        var header=rows[0].map(function(h){return String(h).trim().toLowerCase();});
+        var fi=header.indexOf('first name'), li=header.indexOf('last name'), si=header.indexOf('stores');
+        if(fi===-1) fi=3;   // column D
+        if(li===-1) li=4;   // column E
+        if(si===-1) si=9;   // column J
+
+        var valid={}; SITE_DATA.stores.forEach(function(s){ valid[s.num]=true; });
+        var byName={}, order=[], unknown={}, hqCount=0, needHQ=false;
+
+        for(var r=1;r<rows.length;r++){
+          var cells=rows[r];
+          if(!cells || cells.length===0) continue;
+          var first=(cells[fi]||'').trim(), last=(cells[li]||'').trim();
+          if(!first && !last) continue;
+          var storesCell=(cells[si]||'');
+          var nums=[];
+          storesCell.split(';').forEach(function(part){
+            var m=part.match(/\s*0*(\d+)\s*-/);          // "NN - Store (slug) - ROLE"
+            if(!m) return;                                // non-numbered (e.g. GBGS Brentwood) -> handled below
+            var num=m[1].length===1?('0'+m[1]):m[1];
+            if(valid[num]) nums.push(num); else unknown[num]=true;
+          });
+          if(!nums.length){ nums=[HQ_NUM]; needHQ=true; hqCount++; }   // no store listed -> HQ catch-all
+          var key=(first+' '+last).toLowerCase();
+          if(!byName[key]){ byName[key]={first:first,last:last,stores:{}}; order.push(key); }
+          nums.forEach(function(n){ byName[key].stores[n]=true; });
+        }
+
+        var newHosts=order.map(function(k){
+          var h=byName[k];
+          return {first:h.first, last:h.last, stores:Object.keys(h.stores).sort(cmpStoreNum)};
+        });
+        if(!newHosts.length){ throw new Error('No usable rows found in the CSV.'); }
+
+        var unknownList=Object.keys(unknown).sort();
+        var confirmMsg='Replace all '+SITE_DATA.hosts.length+' current hosts with '+newHosts.length+' from the CSV?';
+        if(hqCount) confirmMsg+='\n\n'+hqCount+' with no store listed will go under "'+HQ_NAME+'".';
+        if(unknownList.length) confirmMsg+='\n\nStore numbers in the CSV that don\'t exist yet (those assignments skipped): '+unknownList.join(', ');
+        if(!confirm(confirmMsg)) { msg.textContent='Import cancelled.'; msg.style.color='var(--toupee)'; return; }
+
+        // Ensure the HQ catch-all store exists if anyone was routed to it.
+        if(needHQ && !SITE_DATA.stores.some(function(s){return s.num===HQ_NUM;})){
+          SITE_DATA.stores.push({num:HQ_NUM, name:HQ_NAME, sheetId:'', gid:''});
+        }
+
+        newHosts.sort(function(a,b){
+          return a.first.toLowerCase().localeCompare(b.first.toLowerCase())
+              || a.last.toLowerCase().localeCompare(b.last.toLowerCase());
+        });
+        SITE_DATA.hosts=newHosts;
+        afterDataChange();
+        document.getElementById('hostSearch').value='';
+        renderAdminHosts();
+
+        var txt='✓ Imported '+newHosts.length+' hosts. Now click “⬇ Download updated index.html” below and re-upload it to GitHub.';
+        if(hqCount) txt+=' ('+hqCount+' with no store -> '+HQ_NAME+'.)';
+        if(unknownList.length) txt+=' Unknown store #s skipped: '+unknownList.join(', ')+'.';
+        msg.textContent=txt; msg.style.color='var(--green)';
+        input.value='';
+      }catch(err){
+        msg.textContent='Could not import: '+(err && err.message ? err.message : err);
+        msg.style.color='var(--coral)';
+      }
+    };
+    reader.onerror=function(){ msg.textContent='Could not read the file.'; msg.style.color='var(--coral)'; };
+    reader.readAsText(file);
   }
 
   async function exportSite(){
