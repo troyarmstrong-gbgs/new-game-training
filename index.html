@@ -312,6 +312,29 @@
   .pill-linked{color:var(--green);font-weight:700;}
   .pill-nolink{color:var(--yellow);font-weight:700;}
 
+  .game-title{
+    position:relative;margin:4px auto 0;max-width:14ch;
+    font-size:clamp(30px,6vw,54px);font-weight:900;font-style:italic;
+    text-transform:uppercase;letter-spacing:-.01em;line-height:1.02;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));
+  }
+  .game-pick{
+    position:relative;margin-top:18px;display:flex;gap:10px;
+    align-items:center;justify-content:center;flex-wrap:wrap;
+  }
+  .game-pick label{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--toupee);}
+  .game-pick select{flex:none;min-width:220px;max-width:340px;}
+
+  #gamePrompt{
+    display:none;text-align:center;color:var(--toupee);
+    font-size:17px;font-weight:600;padding:60px 20px;
+  }
+  main.no-game #gamePrompt{display:block;}
+  main.no-game .section-title,
+  main.no-game .grid,
+  main.no-game #signoff{display:none;}
+
   footer{
     text-align:center;padding:28px 20px 60px;color:var(--toupee);
     font-size:12px;letter-spacing:.05em;
@@ -321,12 +344,18 @@
 <body>
   <header>
     <span class="kicker">Great Big Game Show · New Game Training</span>
-    <img class="logo" src="mystery-menu.png" alt="Mystery Menu">
-    <p class="sub">Watch the walkthroughs and review the docs below to get show-ready. Start with the rules, then run through each round.</p>
+    <img class="logo" id="gameLogo" src="" alt="" style="display:none;">
+    <h1 class="game-title" id="gameTitle"></h1>
+    <p class="sub">Watch the walkthroughs and review the docs below to get show-ready, then sign off.</p>
+    <div class="game-pick" id="gamePick">
+      <label for="gameSelect">Choose your game:</label>
+      <select id="gameSelect" class="field"></select>
+    </div>
     <div class="livebadge"><span class="dot"></span> Training Mode</div>
   </header>
 
   <main>
+    <p id="gamePrompt">⬆ Choose your game above to load the training.</p>
     <h2 class="section-title"><span class="star">★</span> Watch the Videos <span class="rule"></span></h2>
     <div class="grid videos" id="videoGrid"></div>
 
@@ -383,47 +412,51 @@
   </div>
 
   <!-- Store + host data (edited via Admin, exported on download) -->
-  <script id="site-data" type="application/json">{"stores":[{"num":"01","name":"Nashville: Opry Mills","sheetId":"1RkM17dXKp0MTK-jWQYX__fRNivcfRoPimDCdB6qYiW4","gid":"1681493407"},{"num":"02","name":"The Colony","sheetId":"1cL9Y-wTZ618ho1JCYpiZ1iuoc9B7lN3mxBTPNY0E5L4","gid":"1305789006"},{"num":"03","name":"Minneapolis","sheetId":"1C2A5MEZ8jUgdN63Gsh8GH0P97cppsxQlwvqJw6OPj20","gid":"1453920259"},{"num":"04","name":"San Francisco: Wharf","sheetId":"1oFCN5hvuPeVkdi5sssh_qxEne_rQBW_5KqNnPLxRmJM","gid":"1353966129"},{"num":"05","name":"Houston: CityCentre","sheetId":"1o9qiGBNeEOo2r3NxKx7cOxzOAVU9oHD3WDFvP-lVYcY","gid":"542958889"},{"num":"06","name":"Oak Brook","sheetId":"1XB6f1LVGWR_2_ALhhpJUTCJbyNtsiQBN81Aymm09Sbo","gid":"1490293856"},{"num":"07","name":"Pigeon Forge","sheetId":"1BhfCsCFDN9d3NJJSldJdYvmxcd2Kpds5blZUk9abT3c","gid":"147592990"},{"num":"08","name":"DC: Georgetown","sheetId":"1fij7yaArAPaOqHZ3mtef5lRsjaEia9j-JXvVj77BNQQ","gid":"1670225900"},{"num":"09","name":"Las Vegas: Forum Shops","sheetId":"112UxMRyxGWcqrGI5P6p81pRJuEvngWcOY7_U6rcYmnc","gid":"49573383"},{"num":"10","name":"New Jersey","sheetId":"1Ke33DIsZJhIiqtC26xwNCwN53uwJPGtB0PQyVE2RadE","gid":"1352091650"},{"num":"11","name":"Honolulu","sheetId":"18ttGoNMqFSlG8P0VTrauQpSbdcL2rAUCU8EFtavidCs","gid":"737338316"},{"num":"12","name":"St. Louis","sheetId":"1VPOf4EgdRmbwdMKzVx0_3j-FulRNx17sXQ26ln7UkBo","gid":"1637642022"},{"num":"13","name":"San Jose","sheetId":"1lvmgLs55Ohat0Mkyv_naJAAZNMZjJhWwL8HMlDn87zY","gid":"251729970"},{"num":"14","name":"Seattle: South Center","sheetId":"19ktdQvexkLirs4FqhccFkp5xqqdxiD7-InIcNMzL1ag","gid":"1383130475"},{"num":"15","name":"NYC: Times Square","sheetId":"1Pv0_XP6jI5s7loG7dmV2oO_lAfZvFdet-G90TxwqUVM","gid":"1484885040"},{"num":"16","name":"Seattle: Downtown","sheetId":"1ZaQOLMqV3SkxfDSJXTE8y3XtsxOr7fVYs2otmU7-mRs","gid":"208495477"},{"num":"17","name":"Las Vegas: Area15","sheetId":"1gE2Vf2fPmaY6siS6b25D8DlxBbNlcwIsT9Ms09yrVLA","gid":"1112229375"},{"num":"18","name":"Murray","sheetId":"1EEBbIPeK-gzAhKQAN48awB6gthcxspZKL8zpdQSk35Q","gid":"680307207"},{"num":"19","name":"Birmingham","sheetId":"12m81_v1s61mppS0ItHanwvUIsWQNqjIMypqbAZ3agnA","gid":"2042017858"},{"num":"20","name":"Orlando","sheetId":"14PRLBxD4MtfoeCf-LnR4wIFRtlvqOw0S45Bh1eZyM3c","gid":"465235696"},{"num":"21","name":"Schaumburg","sheetId":"19vZp3VtWEV6tzIupGSWL1ewOB2ln-dvCO7qAGiF23jo","gid":"45122968"},{"num":"22","name":"Atlanta: The Battery","sheetId":"16YdxFW1Gl9X6iZXRQq6s6LQN867N8UWMJ60Ki3E2jgM","gid":"1337874338"},{"num":"23","name":"Hanover","sheetId":"15nMitCnaPOJDHiNoKpqdwENwGFzoEsTqSKAQRhaKsBA","gid":"1171970592"},{"num":"24","name":"Panama City Beach","sheetId":"1rIzo1Pyq9dyf4L7hG03eVUrtB01kJcEluMoVCNfHkvg","gid":"2126606748"},{"num":"25","name":"Richmond","sheetId":"1FfdQZpoXSfRMiBAkQBU37kEKxoRxDa5bpQj6SlT4Okk","gid":"46231595"},{"num":"27","name":"Canoga Park","sheetId":"1H6rXHcmfGKARHuna9WQ2U0knRY4Dwgsv4-qIyuoimgY","gid":"208495477"},{"num":"26","name":"Dania Beach","sheetId":"1PJ8IsdArqhAyvs19aDNfdxuQEKvxMMxOdkXjYA1hocI","gid":"208495477"},{"num":"00","name":"GBGS Brentwood/HQ","sheetId":"","gid":""}],"hosts":[{"first":"A'Tonal","last":"Torres","stores":["13"]},{"first":"Aaron","last":"Brown","stores":["19"]},{"first":"Aaron","last":"Monge","stores":["04"]},{"first":"Abby","last":"Maciaszek","stores":["21"]},{"first":"Addison","last":"Burns","stores":["06"]},{"first":"Aidan","last":"Westin","stores":["19"]},{"first":"Aiden","last":"Demers","stores":["17"]},{"first":"Aiden","last":"Weber","stores":["24"]},{"first":"AJ","last":"Hines","stores":["00"]},{"first":"Akell","last":"Cruz","stores":["15"]},{"first":"Akilah","last":"White","stores":["22"]},{"first":"Alan","last":"Goodman","stores":["19"]},{"first":"Albee","last":"Horowitz","stores":["25"]},{"first":"Alex","last":"Grubard","stores":["10"]},{"first":"Alex","last":"Trussler","stores":["01"]},{"first":"Alexander","last":"Ruiz","stores":["10"]},{"first":"Alexis","last":"Evans","stores":["17"]},{"first":"Ali","last":"Lenger","stores":["12"]},{"first":"Alice","last":"Bain","stores":["06"]},{"first":"Alyssia","last":"Gamez Scriven","stores":["22"]},{"first":"Amanda","last":"Dowswell","stores":["00"]},{"first":"Amber","last":"Earl","stores":["18"]},{"first":"Anaiah","last":"Belk","stores":["12"]},{"first":"Andreas","last":"Forbes","stores":["22"]},{"first":"Andrew","last":"Castillo","stores":["05"]},{"first":"Angel","last":"Mozingo","stores":["20"]},{"first":"Annabelle","last":"DeLorge","stores":["02"]},{"first":"Anthony","last":"Bullock","stores":["25"]},{"first":"Anthony","last":"Calbeto","stores":["09","17"]},{"first":"Anvi","last":"Batra","stores":["08"]},{"first":"Aria","last":"Meffe","stores":["15"]},{"first":"Ariyana","last":"Richardson","stores":["15"]},{"first":"Asher","last":"Boney","stores":["07"]},{"first":"Ashton","last":"Williams","stores":["15"]},{"first":"Aubrey","last":"Senese","stores":["06"]},{"first":"Austin","last":"Devito-Spiro","stores":["00"]},{"first":"Austin","last":"Graham","stores":["21"]},{"first":"Ayla","last":"Carda","stores":["14","16"]},{"first":"Bea","last":"Mullins","stores":["20"]},{"first":"Bee","last":"Caal","stores":["08"]},{"first":"Belen","last":"Munoz","stores":["02"]},{"first":"Ben","last":"Biazo","stores":["21"]},{"first":"Ben","last":"Bush","stores":["24"]},{"first":"Ben","last":"Trowell","stores":["07"]},{"first":"Billie","last":"Barboza","stores":["12"]},{"first":"Brandon","last":"Sparks","stores":["14","16"]},{"first":"Brandon","last":"Stubbs","stores":["06","21"]},{"first":"Bre","last":"Brown","stores":["23"]},{"first":"Brian","last":"Bauch","stores":["03"]},{"first":"Brian","last":"Hall","stores":["00"]},{"first":"Brian","last":"Motz","stores":["00"]},{"first":"Brianna","last":"Schapiro","stores":["11"]},{"first":"Britney","last":"Perry","stores":["08"]},{"first":"Bry","last":"Weltz","stores":["15"]},{"first":"Bryony","last":"Schnell","stores":["05"]},{"first":"Bryson","last":"Morgan","stores":["07"]},{"first":"Caden","last":"Parks","stores":["12"]},{"first":"Cadence","last":"Lund","stores":["18"]},{"first":"Cady","last":"Hughes","stores":["15"]},{"first":"Caleb","last":"David","stores":["16"]},{"first":"Caliber","last":"Erickson","stores":["06"]},{"first":"Cally","last":"Pylant","stores":["00"]},{"first":"Calvin","last":"Ross Jr","stores":["12"]},{"first":"Cam","last":"Jackson","stores":["22"]},{"first":"Cameron","last":"Bates","stores":["19"]},{"first":"Carl","last":"Londono","stores":["10"]},{"first":"Carley","last":"Pfister","stores":["00"]},{"first":"Carley","last":"Sorensen","stores":["14"]},{"first":"Carlo","last":"Serrano","stores":["26"]},{"first":"Caro","last":"Scarbrough","stores":["00"]},{"first":"Caroline","last":"Kirby","stores":["16"]},{"first":"Cassidy","last":"Gunter","stores":["25"]},{"first":"CB","last":"Bayani","stores":["22"]},{"first":"Charlie","last":"Meffe","stores":["15"]},{"first":"Charlie","last":"Reilly","stores":["22"]},{"first":"Charlie","last":"Sticha","stores":["06"]},{"first":"Cherry","last":"Rivera","stores":["26"]},{"first":"Chesmon","last":"Evans","stores":["20"]},{"first":"Chris","last":"Cummings","stores":["00"]},{"first":"Christian","last":"Brown","stores":["26"]},{"first":"Christian","last":"Howe","stores":["11"]},{"first":"Christopher","last":"Beers","stores":["09"]},{"first":"CJ","last":"Taylor","stores":["02"]},{"first":"Claire","last":"Elliot","stores":["08"]},{"first":"Cody","last":"Hinman","stores":["18"]},{"first":"Colby","last":"Anthony","stores":["13"]},{"first":"Cole","last":"Allen","stores":["25"]},{"first":"Cole","last":"Frederick","stores":["07"]},{"first":"Cole","last":"Lundgren","stores":["11"]},{"first":"Cole","last":"Pruitt","stores":["08"]},{"first":"Cole","last":"Schjott","stores":["24"]},{"first":"Collin","last":"Watts","stores":["00"]},{"first":"Connor","last":"Kelsey","stores":["11"]},{"first":"Cooper","last":"Ware","stores":["02"]},{"first":"Courtney","last":"Schuster","stores":["00"]},{"first":"Cris","last":"Watson","stores":["21"]},{"first":"Crisbel","last":"Flores","stores":["10"]},{"first":"Dalton","last":"Henderson","stores":["02"]},{"first":"Dan","last":"Gorr","stores":["21"]},{"first":"Dani","last":"Pongiglione","stores":["04"]},{"first":"Daniel","last":"Bejarano","stores":["21"]},{"first":"Daniel","last":"Schurz","stores":["01"]},{"first":"Daniel","last":"Welch","stores":["25"]},{"first":"Danny","last":"Mellado Mota","stores":["15"]},{"first":"Dario","last":"Prioleau","stores":["23"]},{"first":"David","last":"Emanuel","stores":["23"]},{"first":"David","last":"Trowbridge","stores":["18"]},{"first":"Demerius","last":"Webster","stores":["01"]},{"first":"Demetri","last":"Blackman","stores":["00"]},{"first":"Deni","last":"Proto","stores":["16"]},{"first":"Domenica","last":"Capella","stores":["00"]},{"first":"Dominic","last":"Lapi","stores":["04"]},{"first":"Dominique","last":"Carrington","stores":["23"]},{"first":"Donnell","last":"James","stores":["19","25"]},{"first":"Drake","last":"Cunningham","stores":["15"]},{"first":"E","last":"Velazquez","stores":["25"]},{"first":"Ebony","last":"Mosley","stores":["10"]},{"first":"Edwing","last":"Matos","stores":["17"]},{"first":"Eli","last":"Mojica","stores":["08"]},{"first":"Elijah","last":"Watkins","stores":["09"]},{"first":"Elio","last":"Garcia","stores":["04"]},{"first":"Eliyah","last":"Knight","stores":["03"]},{"first":"Ellis","last":"McCurdy","stores":["12"]},{"first":"Elyse","last":"Nicolas","stores":["08"]},{"first":"Emilia","last":"Zielinski","stores":["10"]},{"first":"Emily","last":"Pich","stores":["05"]},{"first":"Emily","last":"Poll","stores":["22"]},{"first":"Emma","last":"McLucas","stores":["23"]},{"first":"Emmaline","last":"McDonald","stores":["00"]},{"first":"Emmy","last":"Prater","stores":["06"]},{"first":"Erik","last":"Huff","stores":["19"]},{"first":"Erik","last":"Rodriguez","stores":["26"]},{"first":"Eryn","last":"Grinius","stores":["00"]},{"first":"Ethan","last":"Hatfield","stores":["22"]},{"first":"Ethan","last":"Morse","stores":["11"]},{"first":"Ethan","last":"Sarphie","stores":["15"]},{"first":"Ethan","last":"Sweeney","stores":["23"]},{"first":"Evelyn","last":"Conner","stores":["09"]},{"first":"Fabian","last":"Mier","stores":["17"]},{"first":"Frederick","last":"Todd","stores":["02"]},{"first":"Gabby","last":"Robinson","stores":["07"]},{"first":"Gabo","last":"Morais","stores":["15"]},{"first":"Gabriel","last":"Hanley","stores":["15"]},{"first":"Gaby","last":"Chacon-Rodriguez","stores":["00"]},{"first":"Gage","last":"Miller","stores":["07"]},{"first":"Garrett","last":"Boettger","stores":["23"]},{"first":"Garrett","last":"Mayberry","stores":["06"]},{"first":"Gavin","last":"Vaughn","stores":["20"]},{"first":"Genevieve","last":"Rogers","stores":["15"]},{"first":"Gino","last":"Scarfone","stores":["17"]},{"first":"Giovanni","last":"Bailey","stores":["06"]},{"first":"Grace","last":"Norton","stores":["18"]},{"first":"Grant","last":"Cambron","stores":["17"]},{"first":"Griffin","last":"Adam","stores":["23"]},{"first":"Hannah","last":"Okosisi","stores":["09"]},{"first":"Harold","last":"Cioffi","stores":["21"]},{"first":"Harper","last":"Smith","stores":["16"]},{"first":"Harry","last":"Edwards","stores":["05"]},{"first":"Haydn","last":"Floros","stores":["23"]},{"first":"Heather","last":"Wells","stores":["24"]},{"first":"Heily","last":"Buford","stores":["05"]},{"first":"Henry","last":"Adams","stores":["06"]},{"first":"Henry","last":"Grogan","stores":["03"]},{"first":"Henry","last":"McCarter","stores":["11"]},{"first":"Houston","last":"Vick","stores":["01"]},{"first":"HQ","last":"Ops","stores":["00"]},{"first":"Hunter","last":"Warburton","stores":["02"]},{"first":"Isaiah","last":"McDonald","stores":["15"]},{"first":"Isiah","last":"Kidd","stores":["20","25"]},{"first":"J.R.","last":"McGonigle","stores":["04"]},{"first":"Jabari","last":"Taylor","stores":["11"]},{"first":"Jace","last":"Ceyanes","stores":["05"]},{"first":"Jack","last":"Marsh","stores":["18"]},{"first":"Jack","last":"Whitmore","stores":["14","16"]},{"first":"Jackson","last":"Rummler","stores":["06"]},{"first":"Jaiden","last":"Bridges","stores":["02"]},{"first":"James","last":"Ramey","stores":["23"]},{"first":"Jamil","last":"Tate","stores":["08"]},{"first":"Jansen","last":"Sharp","stores":["00"]},{"first":"JaNya","last":"Saygbay","stores":["02"]},{"first":"Jared","last":"Pike","stores":["05"]},{"first":"Jared","last":"Smith","stores":["10"]},{"first":"Jarod","last":"Marcil","stores":["20"]},{"first":"Jasmine","last":"Morales","stores":["26"]},{"first":"Javier","last":"Hawit","stores":["00"]},{"first":"Jax","last":"Hawkins","stores":["02"]},{"first":"Jay","last":"Perez","stores":["10"]},{"first":"jay","last":"reid","stores":["12"]},{"first":"Jayda","last":"Brown","stores":["00"]},{"first":"Jayden","last":"Washer","stores":["05"]},{"first":"Jaydin","last":"Daniels","stores":["18"]},{"first":"Jaylen","last":"Ramirez","stores":["25"]},{"first":"Jazz","last":"Thomas","stores":["26"]},{"first":"JD","last":"Rees","stores":["00"]},{"first":"Jean-Carlo","last":"Macias","stores":["17"]},{"first":"Jeanelle","last":"Johnson","stores":["00"]},{"first":"Jennifer","last":"Rodriguez","stores":["02"]},{"first":"Jennifer","last":"Santiago","stores":["03"]},{"first":"Jeron","last":"Jones","stores":["24"]},{"first":"Jerson","last":"Salinas","stores":["10"]},{"first":"Jessica","last":"Delacruz","stores":["23"]},{"first":"Jessica","last":"Dickey","stores":["21"]},{"first":"Jiliana","last":"Ceballos","stores":["19"]},{"first":"Jill","last":"Helding","stores":["23"]},{"first":"Jillian","last":"Schmitz","stores":["23"]},{"first":"Jocelyn","last":"Urbano","stores":["27"]},{"first":"Jocelyn","last":"Urvano","stores":["24"]},{"first":"Jodie","last":"Lloyd","stores":["06"]},{"first":"Joe","last":"Rothstein","stores":["21"]},{"first":"John","last":"Chaneski","stores":["15"]},{"first":"John","last":"Mauldin","stores":["01"]},{"first":"Jomari","last":"Estaris","stores":["10"]},{"first":"Jon","last":"Rogers","stores":["05"]},{"first":"Jordan","last":"Henderson","stores":["14","16"]},{"first":"Jose","last":"Lozano","stores":["04"]},{"first":"Joseph","last":"Paredes","stores":["13"]},{"first":"Josh","last":"Brackett","stores":["07"]},{"first":"Josh","last":"Brown","stores":["05","26"]},{"first":"Josh","last":"Brunson","stores":["24"]},{"first":"Josh","last":"Cassaday","stores":["24"]},{"first":"Josh","last":"Harris","stores":["12"]},{"first":"Josh","last":"Ogline","stores":["26"]},{"first":"Joyous","last":"Celestine","stores":["12"]},{"first":"Julia","last":"Boyd","stores":["02"]},{"first":"Justin","last":"Baker","stores":["14","16"]},{"first":"Justin","last":"Hambey","stores":["24","26"]},{"first":"Kai","last":"Donaldson","stores":["07"]},{"first":"Kaitlyn","last":"Fitzpatrick","stores":["00"]},{"first":"Kali","last":"Swanson","stores":["04"]},{"first":"Katherine","last":"Coleman","stores":["19"]},{"first":"Katie","last":"Washington","stores":["25"]},{"first":"Kaze","last":"Johns","stores":["24"]},{"first":"KC","last":"Pepple","stores":["12"]},{"first":"Keira","last":"Blanco","stores":["06"]},{"first":"Kevonnie","last":"Gibbs","stores":["14"]},{"first":"Khalid","last":"Overall","stores":["12"]},{"first":"Kiera","last":"Parson","stores":["23"]},{"first":"Kindall","last":"Loveless","stores":["17"]},{"first":"Kurt","last":"Fernandez","stores":["01"]},{"first":"Kyle","last":"Hardin","stores":["22"]},{"first":"Kyler","last":"Liddell","stores":["05"]},{"first":"Lakyah","last":"Willis","stores":["12"]},{"first":"Landon","last":"Knight","stores":["19"]},{"first":"Layla","last":"Clayton","stores":["08"]},{"first":"Laylah","last":"Evans","stores":["14"]},{"first":"Len","last":"Watts-Santos","stores":["10"]},{"first":"Leonard","last":"Helding","stores":["23"]},{"first":"Lexi","last":"Lyle","stores":["01"]},{"first":"Lloyd","last":"Masika","stores":["10"]},{"first":"Lolly","last":"Cazares","stores":["13"]},{"first":"Lucas","last":"Johnson","stores":["00"]},{"first":"Lucy","last":"Bone","stores":["04"]},{"first":"Luke","last":"Moglia","stores":["26"]},{"first":"Lyle","last":"Hoffmeister","stores":["03"]},{"first":"Lylly","last":"Hoang","stores":["00"]},{"first":"Lynorque","last":"Robinson","stores":["06"]},{"first":"Maddie","last":"Sledge","stores":["15"]},{"first":"Madeline","last":"Purches","stores":["00"]},{"first":"Madison","last":"Pennington","stores":["24"]},{"first":"Makayla","last":"Chavarria","stores":["10"]},{"first":"Marcos","last":"Formoso","stores":["26"]},{"first":"Marcus","last":"Hopkins","stores":["04"]},{"first":"Mariah","last":"Downs","stores":["09"]},{"first":"Mars","last":"O'Neill","stores":["26"]},{"first":"Marshall","last":"Manago","stores":["14"]},{"first":"Mary","last":"LaMere","stores":["14","16","21"]},{"first":"Mateo","last":"Acevedo","stores":["10"]},{"first":"Matthew","last":"Eubank","stores":["19"]},{"first":"Matthew","last":"Feragola","stores":["00"]},{"first":"Matthew","last":"Kalb","stores":["01"]},{"first":"Max","last":"Fleischer","stores":["26"]},{"first":"Maxine","last":"Haber","stores":["09"]},{"first":"Meg","last":"Moricca","stores":["13"]},{"first":"Mela","last":"Bolouvi","stores":["10"]},{"first":"Melanie","last":"Nina","stores":["10"]},{"first":"Melinda","last":"Thompson","stores":["22"]},{"first":"Meya","last":"McMurray","stores":["25"]},{"first":"Michael","last":"Davis","stores":["24"]},{"first":"Michael","last":"Sangregorio","stores":["10"]},{"first":"Michelle","last":"Watson","stores":["04"]},{"first":"Mikayla","last":"Peete","stores":["00"]},{"first":"Milo","last":"Manning","stores":["25"]},{"first":"Mollie","last":"Moore","stores":["00"]},{"first":"Mya","last":"Jewison","stores":["03"]},{"first":"Myles","last":"China","stores":["22"]},{"first":"Natali","last":"Medrano","stores":["08"]},{"first":"Nate","last":"Jenkins","stores":["22"]},{"first":"Nathen","last":"Marlow","stores":["24"]},{"first":"Nazareth","last":"Collins","stores":["17"]},{"first":"Neil","last":"Kirby","stores":["25"]},{"first":"Nicholas","last":"Dipuma","stores":["10"]},{"first":"Nick","last":"Pinelli","stores":["22"]},{"first":"Nick","last":"Stephenson","stores":["09"]},{"first":"Nico","last":"Cardinale","stores":["12"]},{"first":"Noah","last":"Christenson","stores":["03"]},{"first":"Nova","last":"Michaud","stores":["17"]},{"first":"Olivia","last":"Potter","stores":["11"]},{"first":"Owen","last":"Miller","stores":["15"]},{"first":"Oz","last":"Hancock","stores":["06"]},{"first":"Parsa","last":"Ramezanpour","stores":["02"]},{"first":"Pat","last":"Huynh","stores":["13"]},{"first":"Paxxton","last":"Rehman","stores":["06"]},{"first":"Peter","last":"Guidry","stores":["12"]},{"first":"Peyton","last":"Tomlan","stores":["14","16"]},{"first":"Phillip","last":"Edwards","stores":["07"]},{"first":"Princess","last":"Ravelo","stores":["13"]},{"first":"Querriana","last":"Fulton","stores":["00"]},{"first":"Quinn","last":"Timmins","stores":["15"]},{"first":"Reese","last":"Morales","stores":["06"]},{"first":"Reggie","last":"Clark","stores":["08"]},{"first":"Remus","last":"Staeheli","stores":["03"]},{"first":"Rob","last":"Giordano","stores":["13"]},{"first":"Robin","last":"Lima","stores":["00"]},{"first":"Rodney","last":"Anderson","stores":["13"]},{"first":"Ross","last":"Levy","stores":["20"]},{"first":"Rowan","last":"Goodfellow","stores":["00"]},{"first":"Rowan","last":"Kelly","stores":["03"]},{"first":"Ryan","last":"Ford","stores":["02"]},{"first":"Ryan","last":"Graham","stores":["14","16","21"]},{"first":"Ryan","last":"Murad","stores":["03"]},{"first":"Rylee","last":"Castro","stores":["13"]},{"first":"Sam","last":"Hodson","stores":["00"]},{"first":"Sam","last":"Howell","stores":["15"]},{"first":"Samuel","last":"Lusty","stores":["01"]},{"first":"Sarah","last":"Nicholson","stores":["08"]},{"first":"Saraya","last":"Bailey","stores":["15"]},{"first":"Sawney","last":"Arnett","stores":["14"]},{"first":"Scarlette","last":"Romero","stores":["17"]},{"first":"Scott","last":"Sauers","stores":["00"]},{"first":"Sergio","last":"Carrillo","stores":["20"]},{"first":"Shannon","last":"Ryan","stores":["15"]},{"first":"Sharon","last":"Stroman","stores":["00"]},{"first":"Shelby","last":"Buford","stores":["23"]},{"first":"Sheldon","last":"Chu","stores":["11"]},{"first":"Sierra","last":"Moore","stores":["14"]},{"first":"Sophia","last":"Merchant","stores":["06"]},{"first":"Sora","last":"Roberts","stores":["11"]},{"first":"Steve","last":"Cruz","stores":["00"]},{"first":"Suhaana","last":"Mian","stores":["02"]},{"first":"Summer","last":"Scroggins","stores":["19"]},{"first":"Sunshine","last":"Rawlinson","stores":["20","26"]},{"first":"T.","last":"Murphy","stores":["24"]},{"first":"Tasha","last":"Wade","stores":["01"]},{"first":"Tate","last":"McFlurry","stores":["16"]},{"first":"Tatiana","last":"Parker","stores":["01"]},{"first":"Tee","last":"Willey","stores":["21"]},{"first":"TEG","last":"GES","stores":["11"]},{"first":"TEG","last":"Seattle Downtown","stores":["16"]},{"first":"TEG","last":"Seattle South","stores":["14"]},{"first":"The Escape Game","last":"GES","stores":["17"]},{"first":"Thomas","last":"Jenkins","stores":["18"]},{"first":"Tiffany","last":"Nogoy","stores":["00"]},{"first":"Tiffany","last":"Vineyard","stores":["01"]},{"first":"Tim","last":"Glancy","stores":["09"]},{"first":"TJ","last":"John","stores":["15"]},{"first":"Toni","last":"Kramer","stores":["21"]},{"first":"Tony","last":"Porter","stores":["04"]},{"first":"Travis","last":"Hill","stores":["02"]},{"first":"Trey","last":"Lyle","stores":["25"]},{"first":"Tricia","last":"Veldman","stores":["24"]},{"first":"Trinity","last":"Anderson","stores":["19"]},{"first":"Tristan","last":"Barnett","stores":["00"]},{"first":"Troy","last":"Scalf","stores":["01"]},{"first":"Ty","last":"Harris","stores":["12"]},{"first":"Tyler","last":"Summers","stores":["00"]},{"first":"Undra","last":"Walker","stores":["00"]},{"first":"Valenicia","last":"Eberhardt","stores":["06"]},{"first":"Vanessa","last":"Denise Mott-Williams","stores":["26"]},{"first":"Veronica","last":"Paramo","stores":["17"]},{"first":"Viola","last":"Citizen","stores":["16"]},{"first":"Violet","last":"Camou","stores":["17"]},{"first":"Vivi","last":"Hirst","stores":["00"]},{"first":"Vivian","last":"Marin","stores":["13"]},{"first":"Will","last":"Vaughan","stores":["00"]},{"first":"William","last":"Gomez","stores":["22","26"]},{"first":"Wilson","last":"Lindberg","stores":["03"]},{"first":"Xavier","last":"Pickens","stores":["02"]},{"first":"Yanni","last":"Zhang","stores":["14"]},{"first":"Ynez","last":"Abril","stores":["02"]},{"first":"Zach","last":"Metzger","stores":["00"]},{"first":"Zach","last":"Stone","stores":["20"]},{"first":"Zedrick","last":"Cabrera","stores":["14"]},{"first":"Zee","last":"Busch","stores":["01"]},{"first":"Zenobia","last":"Williams","stores":["22"]},{"first":"Zoe","last":"Garner","stores":["00"]}]}</script>
+  <script id="site-data" type="application/json">{"stores":[{"num":"01","name":"Nashville: Opry Mills","sheetId":"1RkM17dXKp0MTK-jWQYX__fRNivcfRoPimDCdB6qYiW4","gid":"1681493407"},{"num":"02","name":"The Colony","sheetId":"1cL9Y-wTZ618ho1JCYpiZ1iuoc9B7lN3mxBTPNY0E5L4","gid":"1305789006"},{"num":"03","name":"Minneapolis","sheetId":"1C2A5MEZ8jUgdN63Gsh8GH0P97cppsxQlwvqJw6OPj20","gid":"1453920259"},{"num":"04","name":"San Francisco: Wharf","sheetId":"1oFCN5hvuPeVkdi5sssh_qxEne_rQBW_5KqNnPLxRmJM","gid":"1353966129"},{"num":"05","name":"Houston: CityCentre","sheetId":"1o9qiGBNeEOo2r3NxKx7cOxzOAVU9oHD3WDFvP-lVYcY","gid":"542958889"},{"num":"06","name":"Oak Brook","sheetId":"1XB6f1LVGWR_2_ALhhpJUTCJbyNtsiQBN81Aymm09Sbo","gid":"1490293856"},{"num":"07","name":"Pigeon Forge","sheetId":"1BhfCsCFDN9d3NJJSldJdYvmxcd2Kpds5blZUk9abT3c","gid":"147592990"},{"num":"08","name":"DC: Georgetown","sheetId":"1fij7yaArAPaOqHZ3mtef5lRsjaEia9j-JXvVj77BNQQ","gid":"1670225900"},{"num":"09","name":"Las Vegas: Forum Shops","sheetId":"112UxMRyxGWcqrGI5P6p81pRJuEvngWcOY7_U6rcYmnc","gid":"49573383"},{"num":"10","name":"New Jersey","sheetId":"1Ke33DIsZJhIiqtC26xwNCwN53uwJPGtB0PQyVE2RadE","gid":"1352091650"},{"num":"11","name":"Honolulu","sheetId":"18ttGoNMqFSlG8P0VTrauQpSbdcL2rAUCU8EFtavidCs","gid":"737338316"},{"num":"12","name":"St. Louis","sheetId":"1VPOf4EgdRmbwdMKzVx0_3j-FulRNx17sXQ26ln7UkBo","gid":"1637642022"},{"num":"13","name":"San Jose","sheetId":"1lvmgLs55Ohat0Mkyv_naJAAZNMZjJhWwL8HMlDn87zY","gid":"251729970"},{"num":"14","name":"Seattle: South Center","sheetId":"19ktdQvexkLirs4FqhccFkp5xqqdxiD7-InIcNMzL1ag","gid":"1383130475"},{"num":"15","name":"NYC: Times Square","sheetId":"1Pv0_XP6jI5s7loG7dmV2oO_lAfZvFdet-G90TxwqUVM","gid":"1484885040"},{"num":"16","name":"Seattle: Downtown","sheetId":"1ZaQOLMqV3SkxfDSJXTE8y3XtsxOr7fVYs2otmU7-mRs","gid":"208495477"},{"num":"17","name":"Las Vegas: Area15","sheetId":"1gE2Vf2fPmaY6siS6b25D8DlxBbNlcwIsT9Ms09yrVLA","gid":"1112229375"},{"num":"18","name":"Murray","sheetId":"1EEBbIPeK-gzAhKQAN48awB6gthcxspZKL8zpdQSk35Q","gid":"680307207"},{"num":"19","name":"Birmingham","sheetId":"12m81_v1s61mppS0ItHanwvUIsWQNqjIMypqbAZ3agnA","gid":"2042017858"},{"num":"20","name":"Orlando","sheetId":"14PRLBxD4MtfoeCf-LnR4wIFRtlvqOw0S45Bh1eZyM3c","gid":"465235696"},{"num":"21","name":"Schaumburg","sheetId":"19vZp3VtWEV6tzIupGSWL1ewOB2ln-dvCO7qAGiF23jo","gid":"45122968"},{"num":"22","name":"Atlanta: The Battery","sheetId":"16YdxFW1Gl9X6iZXRQq6s6LQN867N8UWMJ60Ki3E2jgM","gid":"1337874338"},{"num":"23","name":"Hanover","sheetId":"15nMitCnaPOJDHiNoKpqdwENwGFzoEsTqSKAQRhaKsBA","gid":"1171970592"},{"num":"24","name":"Panama City Beach","sheetId":"1rIzo1Pyq9dyf4L7hG03eVUrtB01kJcEluMoVCNfHkvg","gid":"2126606748"},{"num":"25","name":"Richmond","sheetId":"1FfdQZpoXSfRMiBAkQBU37kEKxoRxDa5bpQj6SlT4Okk","gid":"46231595"},{"num":"27","name":"Topanga","sheetId":"1H6rXHcmfGKARHuna9WQ2U0knRY4Dwgsv4-qIyuoimgY","gid":"208495477"},{"num":"26","name":"Dania Beach","sheetId":"1PJ8IsdArqhAyvs19aDNfdxuQEKvxMMxOdkXjYA1hocI","gid":"208495477"},{"num":"00","name":"GBGS Brentwood/HQ","sheetId":"","gid":""},{"num":"28","name":"Chicago: Fulton Market","sheetId":"","gid":""},{"num":"29","name":"Atlanta: West Midtown","sheetId":"","gid":""},{"num":"30","name":"Denver","sheetId":"","gid":""},{"num":"31","name":"Roseville","sheetId":"","gid":""}],"hosts":[{"first":"A'Tonal","last":"Torres","stores":["13"]},{"first":"Aaron","last":"Brown","stores":["19"]},{"first":"Aaron","last":"Monge","stores":["04"]},{"first":"Abby","last":"Burkholder","stores":["22"]},{"first":"Abby","last":"Maciaszek","stores":["21"]},{"first":"Addison","last":"Burns","stores":["06"]},{"first":"Admin","last":"Account","stores":["26"]},{"first":"Admin","last":"GBGS","stores":["12"]},{"first":"Admin","last":"GBGS SSC","stores":["14"]},{"first":"Admin","last":"New Jersey","stores":["10"]},{"first":"Admin","last":"PF","stores":["07"]},{"first":"Admin","last":"Schaumburg","stores":["21"]},{"first":"Admin","last":"Seattle DT","stores":["16"]},{"first":"Admin","last":"TEG","stores":["12"]},{"first":"Admin","last":"The Battery Atlanta","stores":["22"]},{"first":"Aiden","last":"Demers","stores":["17"]},{"first":"AJ","last":"Hines","stores":["00"]},{"first":"Akell","last":"Cruz","stores":["15"]},{"first":"Alan","last":"Goodman","stores":["19"]},{"first":"Albee","last":"Horowitz","stores":["25"]},{"first":"Alec","last":"Deske","stores":["15"]},{"first":"Alex","last":"Althouse","stores":["04"]},{"first":"Alex","last":"Bayless","stores":["09"]},{"first":"Alex","last":"Mabardy","stores":["24"]},{"first":"Alex","last":"Trussler","stores":["01"]},{"first":"Alexander","last":"Knobloch","stores":["06"]},{"first":"Alexis","last":"Camille","stores":["03"]},{"first":"Ali","last":"Lenger","stores":["12"]},{"first":"Ally","last":"Lopez","stores":["30"]},{"first":"Alyssia","last":"Gamez Scriven","stores":["22"]},{"first":"Amaia","last":"Thompson","stores":["13"]},{"first":"Amanda","last":"Dowswell","stores":["00"]},{"first":"Amber","last":"Earl","stores":["18"]},{"first":"Amber","last":"Ray","stores":["20"]},{"first":"Anaiah","last":"Belk","stores":["12"]},{"first":"Andrew","last":"Castillo","stores":["05"]},{"first":"Andy","last":"Ramirez","stores":["21"]},{"first":"Angelica","last":"Gonzales","stores":["04"]},{"first":"Angelo","last":"Cruza","stores":["17"]},{"first":"Anneke","last":"Salvadori","stores":["27"]},{"first":"Anni","last":"Sohn","stores":["16"]},{"first":"Anthony","last":"Bullock","stores":["25"]},{"first":"Anthony","last":"Calbeto","stores":["09","17"]},{"first":"Ari","last":"Ramos","stores":["30"]},{"first":"Ash","last":"Baker","stores":["20"]},{"first":"Ashton","last":"Snow","stores":["00"]},{"first":"Asia","last":"Lowry","stores":["04"]},{"first":"Audrey","last":"Portela","stores":["15"]},{"first":"Aurora","last":"Quintana","stores":["30"]},{"first":"Austin","last":"Devito-Spiro","stores":["00"]},{"first":"Ayla","last":"Carda","stores":["16"]},{"first":"Bea","last":"Mullins","stores":["20"]},{"first":"Bee","last":"Caal","stores":["08"]},{"first":"Belen","last":"Munoz","stores":["02"]},{"first":"Bella","last":"Costantino","stores":["08"]},{"first":"Ben","last":"Enos","stores":["00"]},{"first":"Ben","last":"Speck","stores":["28"]},{"first":"Ben","last":"Trowell","stores":["07"]},{"first":"Billie","last":"Barboza","stores":["12"]},{"first":"Bjorn","last":"Rosedale","stores":["21"]},{"first":"Blake","last":"Marcus","stores":["11"]},{"first":"Brandon","last":"Houck","stores":["17"]},{"first":"Brandon","last":"Sparks","stores":["16"]},{"first":"Brandon","last":"Stubbs","stores":["06"]},{"first":"Bre","last":"Brown","stores":["23"]},{"first":"Bre","last":"Cooper","stores":["28"]},{"first":"Breanna","last":"Cooper","stores":["28"]},{"first":"Brian","last":"Bauch","stores":["03"]},{"first":"Brian","last":"Brown","stores":["23"]},{"first":"Brian","last":"Hall","stores":["00"]},{"first":"Brian","last":"Motz","stores":["00"]},{"first":"Brianna","last":"Potter","stores":["00"]},{"first":"Brianna","last":"Schapiro","stores":["11"]},{"first":"Brittany","last":"Shires","stores":["08"]},{"first":"Brooke","last":"Searcy","stores":["05"]},{"first":"Bryan","last":"Prest","stores":["04"]},{"first":"Bryony","last":"Schnell","stores":["05"]},{"first":"Bryson","last":"Morgan","stores":["07","30"]},{"first":"Caden","last":"Parks","stores":["12"]},{"first":"Cadence","last":"Lund","stores":["18"]},{"first":"Cady","last":"Hughes","stores":["15"]},{"first":"Caleb","last":"Stephens","stores":["29"]},{"first":"Caliber","last":"Erickson","stores":["06"]},{"first":"Cally","last":"Pylant","stores":["00"]},{"first":"Calvin","last":"Ross Jr","stores":["12"]},{"first":"Cam","last":"Jackson","stores":["22"]},{"first":"Cameron","last":"Bates","stores":["19"]},{"first":"Cameron","last":"Lovings","stores":["25"]},{"first":"Carl","last":"Londono","stores":["10"]},{"first":"Carley","last":"Pfister","stores":["00"]},{"first":"Carley","last":"Sorensen","stores":["14"]},{"first":"Carlo","last":"Serrano","stores":["26"]},{"first":"Caro","last":"Scarbrough","stores":["00"]},{"first":"Caroline","last":"Kirby","stores":["16"]},{"first":"Caroline","last":"Tippitt","stores":["26"]},{"first":"Cash","last":"Cole","stores":["28"]},{"first":"Cassidy","last":"David","stores":["15"]},{"first":"Cassidy","last":"Gunter","stores":["25"]},{"first":"CB","last":"Bayani","stores":["22"]},{"first":"Ceion","last":"Scott","stores":["05"]},{"first":"Charlie","last":"Meffe","stores":["15"]},{"first":"Charlie","last":"Reilly","stores":["22"]},{"first":"Charlie","last":"Sticha","stores":["06"]},{"first":"Charliee","last":"Hines","stores":["29"]},{"first":"Chesmon","last":"Evans","stores":["20"]},{"first":"Chip","last":"GBGS","stores":["17"]},{"first":"Chip","last":"Trebek","stores":["28"]},{"first":"Chris","last":"Burkhard","stores":["21","28"]},{"first":"Chris","last":"Cummings","stores":["00"]},{"first":"Chris","last":"Spangler","stores":["27"]},{"first":"Christian","last":"Brown","stores":["26"]},{"first":"Christian","last":"Scheller","stores":["29"]},{"first":"Christine","last":"Mortimer","stores":["30"]},{"first":"Christopher","last":"Beers","stores":["09"]},{"first":"Christopher","last":"Flores","stores":["10"]},{"first":"Christopher","last":"Gerrow","stores":["29"]},{"first":"Claire","last":"Elliot","stores":["08"]},{"first":"Cody","last":"Hendrickson","stores":["16"]},{"first":"Cody","last":"Hinman","stores":["18"]},{"first":"Cogs","last":"Cavazos","stores":["30"]},{"first":"Cole","last":"Allen","stores":["25"]},{"first":"Cole","last":"Frederick","stores":["07"]},{"first":"Cole","last":"Lundgren","stores":["11"]},{"first":"Cole","last":"Schjott","stores":["24"]},{"first":"Colton","last":"Sior","stores":["31"]},{"first":"Colton Test","last":"Sior","stores":["00"]},{"first":"Connor","last":"Kelsey","stores":["11"]},{"first":"Cooper","last":"Everhart","stores":["08"]},{"first":"Cooper","last":"Schafer","stores":["00"]},{"first":"Courtney","last":"Schuster","stores":["00"]},{"first":"Crisbel","last":"Flores","stores":["10"]},{"first":"Dalton","last":"Henderson","stores":["02"]},{"first":"Dani","last":"Pongiglione","stores":["04"]},{"first":"Daniel","last":"Binet","stores":["04"]},{"first":"Daniel","last":"Rye","stores":["00"]},{"first":"Daniela","last":"Benitez","stores":["10"]},{"first":"Danny","last":"Sanders","stores":["28"]},{"first":"Danny B","last":"Bejarano","stores":["21"]},{"first":"Dario","last":"Prioleau","stores":["23"]},{"first":"David","last":"Trowbridge","stores":["18"]},{"first":"Demetri","last":"Blackman","stores":["00"]},{"first":"Deni","last":"Proto","stores":["16"]},{"first":"DJ","last":"Nill","stores":["21"]},{"first":"Domenica","last":"Capella","stores":["00"]},{"first":"Dominic","last":"Lapi","stores":["04"]},{"first":"Donnell","last":"James","stores":["19"]},{"first":"Drake","last":"Cunningham","stores":["15"]},{"first":"Duc","last":"Truong","stores":["13"]},{"first":"Dylan","last":"Hawkins","stores":["23"]},{"first":"Eli","last":"Mojica","stores":["08"]},{"first":"Elio","last":"Garcia","stores":["04"]},{"first":"Elisabeth","last":"Nordeen","stores":["15"]},{"first":"Eloy","last":"Roybal","stores":["10"]},{"first":"Elyse","last":"Dawson","stores":["00"]},{"first":"Elyse","last":"Nicolas","stores":["08"]},{"first":"Emaan","last":"Faisal","stores":["02"]},{"first":"Emily","last":"Pich","stores":["05"]},{"first":"Emily","last":"Poll","stores":["22"]},{"first":"Emma","last":"Cook","stores":["22"]},{"first":"Emmaline","last":"McDonald","stores":["00"]},{"first":"Erik","last":"Huff","stores":["30"]},{"first":"Erik","last":"Rodriguez","stores":["26"]},{"first":"Eryn","last":"Grinius","stores":["00"]},{"first":"Ethan","last":"Hatfield","stores":["22"]},{"first":"Ethan","last":"Morse","stores":["11"]},{"first":"Ethan","last":"Sarphie","stores":["15"]},{"first":"Ethan","last":"Sweeney","stores":["23"]},{"first":"Evelyn","last":"Conner","stores":["09"]},{"first":"Ezra","last":"Sims","stores":["29"]},{"first":"Fabian","last":"Mier","stores":["17"]},{"first":"Faith","last":"Prater","stores":["27"]},{"first":"Fletcher","last":"Moore","stores":["09"]},{"first":"Frederick","last":"Todd","stores":["02"]},{"first":"Gabby","last":"Robinson","stores":["07"]},{"first":"Gabo","last":"Morais","stores":["15"]},{"first":"Gabriel","last":"Hanley","stores":["15"]},{"first":"Gaby","last":"Chacon-Rodriguez","stores":["00"]},{"first":"Gage","last":"Miller","stores":["07"]},{"first":"Garrett","last":"Boettger","stores":["23"]},{"first":"Garrett","last":"Mayberry","stores":["06"]},{"first":"GBGS","last":"Production","stores":["20"]},{"first":"GBGS Forums","last":"Admin","stores":["09"]},{"first":"Genesis","last":"Beecham","stores":["28"]},{"first":"George","last":"Livingston","stores":["01"]},{"first":"Giovanni","last":"Bailey","stores":["06"]},{"first":"Grace","last":"Norton","stores":["18"]},{"first":"Grant","last":"Cambron","stores":["17"]},{"first":"Great Big Game Show","last":"Admin","stores":["15"]},{"first":"Griffin","last":"Adam","stores":["23"]},{"first":"GTN","last":"Admin","stores":["08"]},{"first":"Hannah","last":"Hector","stores":["27"]},{"first":"Hannah","last":"Okosisi","stores":["09"]},{"first":"Hanover","last":"Admin","stores":["23"]},{"first":"Haydn","last":"Floros","stores":["23"]},{"first":"Heily","last":"Buford","stores":["05"]},{"first":"Henry","last":"Amozig","stores":["11"]},{"first":"Henry","last":"Grogan","stores":["03"]},{"first":"Henry","last":"Mantle","stores":["18"]},{"first":"Henry","last":"Russell","stores":["04"]},{"first":"Herby","last":"Metelus","stores":["20"]},{"first":"HQ","last":"Ops","stores":["00"]},{"first":"Isaiah","last":"McDonald","stores":["15"]},{"first":"Isiah","last":"Kidd","stores":["20"]},{"first":"Issac","last":"Aldana","stores":["27"]},{"first":"Jabari","last":"Taylor","stores":["11"]},{"first":"Jace","last":"Ceyanes","stores":["05"]},{"first":"Jack","last":"Estavanik","stores":["10"]},{"first":"Jack","last":"Marsh","stores":["18"]},{"first":"Jackson","last":"Rummler","stores":["28"]},{"first":"Jacob","last":"Cordano","stores":["04"]},{"first":"Jacob","last":"Stowe","stores":["27"]},{"first":"Jacoby","last":"Rupp","stores":["30"]},{"first":"Jada","last":"Barnwell","stores":["20"]},{"first":"Jade","last":"Schaub","stores":["28"]},{"first":"Jade","last":"Score-Anglin","stores":["17"]},{"first":"Jaden","last":"Tarver","stores":["08"]},{"first":"Jaiden","last":"Bridges","stores":["02"]},{"first":"James","last":"Ramey","stores":["23"]},{"first":"Jamil","last":"Tate","stores":["08"]},{"first":"Jansen","last":"Sharp","stores":["00"]},{"first":"Jared","last":"Smith","stores":["10"]},{"first":"Jason","last":"Ordonez","stores":["26"]},{"first":"Javier","last":"Hawit","stores":["00"]},{"first":"Javion","last":"Smith","stores":["16"]},{"first":"Jax","last":"Hawkins","stores":["02"]},{"first":"Jay","last":"Mosely","stores":["28"]},{"first":"Jay","last":"Perez","stores":["10"]},{"first":"Jayda","last":"Brown","stores":["00"]},{"first":"Jaydin","last":"Daniels","stores":["18","30"]},{"first":"Jaylen","last":"Ramirez","stores":["25"]},{"first":"Jazaver","last":"Brinkley","stores":["29"]},{"first":"Jazz","last":"Thomas","stores":["26"]},{"first":"JD","last":"Rees","stores":["00"]},{"first":"Jeanelle","last":"Johnson","stores":["00"]},{"first":"Jeff","last":"Marshall","stores":["03"]},{"first":"Jelani","last":"Escorpiso","stores":["27"]},{"first":"Jennifer","last":"Rodriguez","stores":["02"]},{"first":"Jennifer","last":"Santiago","stores":["03"]},{"first":"Jeron","last":"Jones","stores":["24"]},{"first":"Jerson","last":"Salinas","stores":["10"]},{"first":"Jesmila","last":"Davis","stores":["04"]},{"first":"Jessica","last":"Delacruz","stores":["23"]},{"first":"Jessica","last":"Dickey","stores":["06"]},{"first":"Jesus","last":"Cisneros","stores":["10"]},{"first":"Jiliana","last":"Ceballos","stores":["19"]},{"first":"Jill","last":"Helding","stores":["08","23"]},{"first":"Jillian","last":"Schmitz","stores":["23"]},{"first":"Joe","last":"Rothstein","stores":["21"]},{"first":"Joey","last":"Desiervi","stores":["27"]},{"first":"John","last":"Chaneski","stores":["15"]},{"first":"John","last":"Mauldin","stores":["01"]},{"first":"Jolie","last":"Ruiz-Torres","stores":["25"]},{"first":"Jon","last":"Bareis","stores":["06"]},{"first":"Jon","last":"Rogers","stores":["05"]},{"first":"Jordan","last":"Henderson","stores":["14","16"]},{"first":"Jordan","last":"Timmons","stores":["29"]},{"first":"Jose","last":"Lozano","stores":["04"]},{"first":"Joseph","last":"Paredes","stores":["13"]},{"first":"Josh","last":"Arntz","stores":["28"]},{"first":"Josh","last":"Brackett","stores":["07"]},{"first":"Josh","last":"Brown","stores":["05"]},{"first":"Josh","last":"Cassaday","stores":["24"]},{"first":"Josh","last":"Latka","stores":["27"]},{"first":"Josh","last":"Lee","stores":["08"]},{"first":"Josh","last":"Ogline","stores":["26"]},{"first":"Joshua","last":"Brunson","stores":["24"]},{"first":"Julia","last":"Boyd","stores":["02"]},{"first":"Julia","last":"Machin","stores":["27"]},{"first":"Justin","last":"Baker","stores":["14","16"]},{"first":"Justin","last":"Eves","stores":["13"]},{"first":"Justin","last":"Hambey","stores":["26"]},{"first":"Justin","last":"Stevenson","stores":["22"]},{"first":"Kaitlyn","last":"Fitzpatrick","stores":["00"]},{"first":"Kaito","last":"Nien","stores":["13"]},{"first":"Kali","last":"Swanson","stores":["04"]},{"first":"Kamora","last":"Adams","stores":["26"]},{"first":"Katherine","last":"Coleman","stores":["19"]},{"first":"Kaz","last":"Sartori","stores":["01"]},{"first":"KC","last":"Pepple","stores":["12"]},{"first":"Keira","last":"Howard","stores":["12"]},{"first":"Kenny","last":"Reagan","stores":["07"]},{"first":"Kevin","last":"McKain","stores":["00"]},{"first":"Kevonnie","last":"Gibbs","stores":["14"]},{"first":"Khalid","last":"Overall","stores":["12"]},{"first":"Kiera","last":"Parson","stores":["23"]},{"first":"Kira","last":"Sable","stores":["03"]},{"first":"Kristen","last":"Chen Eng","stores":["11"]},{"first":"Kurt","last":"Fernandez","stores":["01"]},{"first":"Kyle","last":"Hardin","stores":["22","29"]},{"first":"Kyler","last":"Liddell","stores":["05"]},{"first":"Landon","last":"Knight","stores":["19"]},{"first":"Layla","last":"Clayton","stores":["08"]},{"first":"Laylah","last":"Evans","stores":["14"]},{"first":"Leonard","last":"Helding","stores":["08","23"]},{"first":"Lex","last":"Nadal","stores":["30"]},{"first":"Lia","last":"Griffiths","stores":["27"]},{"first":"Libby","last":"Dalton","stores":["00"]},{"first":"Lloyd","last":"Masika","stores":["10"]},{"first":"Lucas","last":"Johnson","stores":["30"]},{"first":"Lucy","last":"Bone","stores":["04"]},{"first":"Luke","last":"Moglia","stores":["00"]},{"first":"Lyle","last":"Hoffmeister","stores":["03"]},{"first":"Lylly","last":"Hoang","stores":["00"]},{"first":"Maddie","last":"Sledge","stores":["15"]},{"first":"Maddox","last":"Egge","stores":["13"]},{"first":"Madeline","last":"Purches","stores":["00"]},{"first":"Mahalia","last":"Norgaisse","stores":["26"]},{"first":"Makayla","last":"Chavarria","stores":["10"]},{"first":"Mannie","last":"Tims","stores":["27"]},{"first":"Marcos","last":"Formoso","stores":["26"]},{"first":"Marcus","last":"Hopkins","stores":["04"]},{"first":"Mariah","last":"Downs","stores":["09"]},{"first":"Marlie","last":"Lo'Rose","stores":["29"]},{"first":"Marshall","last":"Manago","stores":["14"]},{"first":"Mary","last":"LaMere","stores":["21"]},{"first":"Matthew","last":"Eubank","stores":["19"]},{"first":"Matthew","last":"Feragola","stores":["00"]},{"first":"Matthew","last":"Kalb","stores":["01"]},{"first":"Max","last":"Fleischer","stores":["26"]},{"first":"Max","last":"Magura","stores":["00"]},{"first":"Max","last":"Millington","stores":["27"]},{"first":"Max App","last":"Large Group Waivers","stores":["00"]},{"first":"Maya","last":"Dequin","stores":["11"]},{"first":"Mazzy","last":"Sacia","stores":["28"]},{"first":"Meg","last":"Moricca","stores":["13"]},{"first":"Megan","last":"Penrod","stores":["28"]},{"first":"Mel","last":"De Zayas","stores":["30"]},{"first":"Mela","last":"Bolouvi","stores":["10"]},{"first":"Melanie","last":"Nina","stores":["10"]},{"first":"Meya","last":"McMurray","stores":["25"]},{"first":"Michael","last":"Davis","stores":["24"]},{"first":"Michael","last":"McWilliams","stores":["15"]},{"first":"Mikayla","last":"Peete","stores":["00"]},{"first":"Milo","last":"Manning","stores":["25"]},{"first":"Mollie","last":"Moore","stores":["00"]},{"first":"Mya","last":"Jewison","stores":["03"]},{"first":"Myles","last":"China","stores":["22"]},{"first":"Natali","last":"Medrano","stores":["08"]},{"first":"Nate","last":"Jenkins","stores":["22"]},{"first":"Nate","last":"Rodriguez","stores":["06"]},{"first":"Nathen","last":"Marlow","stores":["24"]},{"first":"Nazareth","last":"Collins","stores":["17"]},{"first":"Neil","last":"Kirby","stores":["25"]},{"first":"Nicholas","last":"Dipuma","stores":["10"]},{"first":"Nick","last":"Pinelli","stores":["22"]},{"first":"Nick","last":"Stephenson","stores":["09"]},{"first":"Nicky Mack","last":"Macchiarella","stores":["22"]},{"first":"Nico","last":"Cardinale","stores":["12"]},{"first":"Nicole","last":"Baxter-Green","stores":["30"]},{"first":"Nova","last":"Gaudez","stores":["15"]},{"first":"Nova","last":"Michaud","stores":["17"]},{"first":"Orlando","last":"Admin","stores":["20"]},{"first":"Owen","last":"Miller","stores":["15"]},{"first":"Oz","last":"Hancock","stores":["28"]},{"first":"Parsa","last":"Ramezanpour","stores":["02"]},{"first":"Pat","last":"Huynh","stores":["13"]},{"first":"Payton","last":"Cross","stores":["09"]},{"first":"Peter","last":"Guidry","stores":["12"]},{"first":"Peyton","last":"Tomlan","stores":["16"]},{"first":"Phillip","last":"Edwards","stores":["07"]},{"first":"Phillip L","last":"Edwards","stores":["07"]},{"first":"Querriana","last":"Fulton","stores":["00"]},{"first":"Reece","last":"Collie","stores":["18"]},{"first":"Reese","last":"Morales","stores":["06"]},{"first":"Reggie","last":"Clark","stores":["08"]},{"first":"Regine","last":"Bowman","stores":["21"]},{"first":"Remus","last":"Staeheli","stores":["03"]},{"first":"Ren","last":"Burton","stores":["28"]},{"first":"Rick","last":"Solari","stores":["26"]},{"first":"Rob","last":"Giordano","stores":["13"]},{"first":"Robin","last":"Lima","stores":["00"]},{"first":"Robyn","last":"Davenport","stores":["13"]},{"first":"Ross","last":"Levy","stores":["20"]},{"first":"Rowan","last":"Goodfellow","stores":["00"]},{"first":"Rowan","last":"Kelly","stores":["03"]},{"first":"Ryan","last":"Ford","stores":["02"]},{"first":"Ryan","last":"Graham","stores":["14","16"]},{"first":"Ryan","last":"Murad","stores":["03"]},{"first":"Rylee","last":"Castro","stores":["13"]},{"first":"Sam","last":"Cancel","stores":["15"]},{"first":"Sam","last":"Hodson","stores":["00"]},{"first":"Sam","last":"Howell","stores":["15"]},{"first":"Samir","last":"Shalha","stores":["22"]},{"first":"Sanetra","last":"Brown","stores":["26"]},{"first":"Sarah","last":"Nicholson","stores":["08"]},{"first":"Sarah","last":"Pierce","stores":["09"]},{"first":"Saraya","last":"Bailey","stores":["15"]},{"first":"Sasha","last":"Rudeshko","stores":["04"]},{"first":"Sawney","last":"Arnett","stores":["14"]},{"first":"Scott","last":"Lathrom","stores":["05"]},{"first":"Scott","last":"Sauers","stores":["00"]},{"first":"Sean","last":"Spradlin","stores":["00"]},{"first":"Seth","last":"Bradford","stores":["04"]},{"first":"Shane","last":"Coleman","stores":["19"]},{"first":"Shannon","last":"Ryan","stores":["15"]},{"first":"Sharon","last":"Stroman","stores":["00"]},{"first":"Shelby","last":"Buford","stores":["23"]},{"first":"Sheldon","last":"Chu","stores":["11"]},{"first":"Sierra","last":"Moore","stores":["14"]},{"first":"Social","last":"Media","stores":["02","06","13","28"]},{"first":"Spencer","last":"Rowland","stores":["00"]},{"first":"Steve","last":"Cruz","stores":["00"]},{"first":"Suhaana","last":"Mian","stores":["02"]},{"first":"Summer","last":"Scroggins","stores":["00"]},{"first":"Sunshine","last":"Rawlinson","stores":["08","20"]},{"first":"Swagg","last":"Allen","stores":["29"]},{"first":"Sydney","last":"Richards","stores":["28"]},{"first":"T.","last":"Murphy","stores":["24"]},{"first":"Tate","last":"McFlurry","stores":["16"]},{"first":"Tatiana","last":"Parker","stores":["01"]},{"first":"Teddy","last":"Cheek","stores":["00"]},{"first":"Teddy - do not change (host o rama)","last":"Cheek - do not change (host o rama)","stores":["00"]},{"first":"TeeJ","last":"Mercer","stores":["22","29"]},{"first":"TEG","last":"Admin","stores":["09","15"]},{"first":"TEG","last":"GES","stores":["11"]},{"first":"TEG","last":"Seattle Downtown","stores":["16"]},{"first":"TEG","last":"Seattle South","stores":["14"]},{"first":"Test","last":"Host","stores":["00"]},{"first":"Test","last":"Tester","stores":["00"]},{"first":"The Escape Game","last":"GES","stores":["17"]},{"first":"Theo","last":"Koulis","stores":["21"]},{"first":"Thomas","last":"Jenkins","stores":["18"]},{"first":"Tiffany","last":"Nogoy","stores":["00"]},{"first":"Tim","last":"Glancy","stores":["09","30"]},{"first":"TJ","last":"John","stores":["15"]},{"first":"Todd","last":"Reagor","stores":["24"]},{"first":"Toni","last":"Hamilton","stores":["26"]},{"first":"Tony","last":"Porter","stores":["04"]},{"first":"Travis","last":"Hill","stores":["02"]},{"first":"Trey","last":"Lyle","stores":["25"]},{"first":"Trinity","last":"Anderson","stores":["19"]},{"first":"Tristan","last":"Barnett","stores":["00"]},{"first":"Troy","last":"Armstrong","stores":["00"]},{"first":"Twix","last":"Shepard","stores":["29"]},{"first":"Ty","last":"Harris","stores":["12"]},{"first":"Tyler","last":"Hanson","stores":["30"]},{"first":"Tyler","last":"Holz","stores":["08"]},{"first":"Tyler","last":"Sadorf","stores":["17"]},{"first":"Tyler","last":"Summers","stores":["00"]},{"first":"Valenicia","last":"Eberhardt","stores":["06"]},{"first":"Vanessa Denise","last":"Mott-Williams","stores":["26"]},{"first":"Veronica","last":"Paramo","stores":["17"]},{"first":"Victoria","last":"Thomasson","stores":["28"]},{"first":"Vince","last":"Cuna","stores":["15"]},{"first":"Viola","last":"Citizen","stores":["14","16"]},{"first":"Violet","last":"Camou","stores":["17"]},{"first":"Vivi","last":"Hirst","stores":["00"]},{"first":"Vivian","last":"Marin","stores":["13"]},{"first":"West Valley","last":"Admin Account","stores":["27"]},{"first":"Will","last":"Kisor","stores":["27"]},{"first":"William","last":"Gomez","stores":["22"]},{"first":"Xavier","last":"Pickens","stores":["02"]},{"first":"Zach","last":"Etchill","stores":["00"]},{"first":"Zach","last":"Metzger","stores":["00"]},{"first":"Zach","last":"Stone","stores":["20"]},{"first":"Zaida","last":"McMahan","stores":["04"]},{"first":"Zedrick","last":"Cabrera","stores":["14"]},{"first":"Zee","last":"Busch","stores":["01"]},{"first":"Zoe","last":"Garner","stores":["00"]}]}</script>
 
 <script>
-  /* =========================================================
-     VIDEO SOURCES — YouTube link or ID for each video.
-     ========================================================= */
-  const VIDEO_SOURCES = {
-    "rules":       "https://youtu.be/EBhbUaQGjbU",
-    "playthrough": "https://youtu.be/q_k1ycCBBbM",
-    "intro":       "https://youtu.be/pQJpI0NcTdE",
-    "lucky":       "https://youtu.be/kgETckv9qKM",
-    "silly":       "https://youtu.be/SqQK_8pvwGI",
-    "smart":       "https://youtu.be/lNBHcaayyhQ",
-    "hungry":      "https://youtu.be/GQXBQSiByTM"
-  };
+  /* ============================================================
+     GAMES — each game defines its own videos + docs. Hosts and
+     stores (in the site-data block above) are SHARED across all
+     games. To add a game, copy a block and fill in its YouTube
+     links and PDF file names.
+     ============================================================ */
+  const GAMES = [
+    {
+      id:"mystery-menu", name:"Mystery Menu", logo:"mystery-menu.png",
+      videos:[
+        {title:"Rules Video",      tag:"Start Here", cls:"intro", yt:"https://youtu.be/EBhbUaQGjbU", desc:"The official rules of Mystery Menu."},
+        {title:"Full Playthrough", tag:"Playthrough",cls:"intro", yt:"https://youtu.be/q_k1ycCBBbM", desc:"A full start-to-finish playthrough of Mystery Menu."},
+        {title:"Intro",            tag:"Overview",   cls:"intro", yt:"https://youtu.be/pQJpI0NcTdE", desc:"Overview of how Mystery Menu is played."},
+        {title:"Feeling Lucky",    tag:"Microgame",  cls:"round", yt:"https://youtu.be/kgETckv9qKM", desc:"Walkthrough of the Feeling Lucky microgame."},
+        {title:"Feeling Silly",    tag:"Microgame",  cls:"round", yt:"https://youtu.be/SqQK_8pvwGI", desc:"Walkthrough of the Feeling Silly microgame."},
+        {title:"Feeling Smart",    tag:"Microgame",  cls:"round", yt:"https://youtu.be/lNBHcaayyhQ", desc:"Walkthrough of the Feeling Smart microgame."},
+        {title:"Feeling Hungry",   tag:"Microgame",  cls:"round", yt:"https://youtu.be/GQXBQSiByTM", desc:"Walkthrough of the Feeling Hungry microgame."}
+      ],
+      docs:[
+        {file:"Mystery Menu Training Manual.pdf", v:"20260731", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
+        {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"},
+        {url:"https://docs.google.com/presentation/d/125c3IZnlyC7Lze8bgfVtfV2Huo2c6lBt0aqoK5uwUAQ/edit?slide=id.g2bfe17fa51e_0_486#slide=id.g2bfe17fa51e_0_486", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
+      ]
+    },
+    {
+      id:"maze-craze", name:"Maze Craze", logo:"maze-craze-logo.png",
+      videos:[
+        {title:"Rules Video", tag:"Start Here", cls:"intro", yt:"https://youtu.be/Ko3XufkfSJI", desc:"The official rules of Maze Craze."},
+        {title:"Explainer",   tag:"Overview",   cls:"intro", yt:"https://youtu.be/rCPBbtz4nJM", desc:"A deeper explainer of how Maze Craze works."}
+      ],
+      docs:[
+        {file:"Maze Craze Training.pdf", title:"Training Manual", desc:"Full host guide & rules.", abbr:"PDF"},
+        {url:"https://docs.google.com/presentation/d/1PKCff4JSRsWBv8IO3VKVVppZpEQ4sBJxZNdp_ArtZhQ/edit?slide=id.g25260608462_0_237#slide=id.g25260608462_0_237", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
+      ]
+    }
+  ];
 
-  /* Central Apps Script endpoint. Receives {spreadsheetId,gid,name,...} and
-     advances that store's passport dropdown. See README-DEPLOY.md. */
   const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
 
-  const videos = [
-    {key:"rules",       title:"Rules Video",     tag:"Start Here", cls:"intro", thumb:"thumbnails/Rules.jpg",         desc:"The official rules of Mystery Menu."},
-    {key:"playthrough", title:"Full Playthrough",tag:"Playthrough",cls:"intro", thumb:"thumbnails/Playthrough.jpg",   desc:"A full start-to-finish playthrough of Mystery Menu."},
-    {key:"intro",  title:"Intro",         tag:"Overview",   cls:"intro", thumb:"thumbnails/Intro.jpg",         desc:"Overview of how Mystery Menu is played."},
-    {key:"lucky",  title:"Feeling Lucky", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Lucky.jpg", desc:"Walkthrough of the Feeling Lucky microgame."},
-    {key:"silly",  title:"Feeling Silly", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Silly.jpg", desc:"Walkthrough of the Feeling Silly microgame."},
-    {key:"smart",  title:"Feeling Smart", tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Smart.jpg", desc:"Walkthrough of the Feeling Smart microgame."},
-    {key:"hungry", title:"Feeling Hungry",tag:"Microgame",  cls:"round", thumb:"thumbnails/Feeling Hungry.jpg",desc:"Walkthrough of the Feeling Hungry microgame."}
-  ];
-  const docs = [
-    {file:"Mystery Menu Training Manual.pdf", v:"20260731", title:"Training Manual", desc:"Full host guide, rules & scoring.", abbr:"PDF"},
-    {file:"Mystery Menu Print Menu.pdf",      title:"Print Menu",      desc:"The on-stage printed menu prop.",  abbr:"PDF"},
-    {url:"https://docs.google.com/presentation/d/125c3IZnlyC7Lze8bgfVtfV2Huo2c6lBt0aqoK5uwUAQ/edit?slide=id.g2bfe17fa51e_0_486#slide=id.g2bfe17fa51e_0_486", title:"Training Slides", desc:"Full training deck (opens in a new tab).", abbr:"↗"}
-  ];
-
-  /* Store + host data */
   let SITE_DATA = JSON.parse(document.getElementById('site-data').textContent);
-
   const enc = f => f.split('/').map(encodeURIComponent).join('/');
   const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
   function ytId(src){
     if(!src) return "";
     let m = src.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
@@ -432,203 +465,190 @@
     return m ? src : "";
   }
 
-  /* ---------- Render video + doc cards ---------- */
-  const vGrid = document.getElementById('videoGrid');
-  videos.forEach((v,i)=>{
-    const c = document.createElement('div');
-    c.className = 'card';
-    c.dataset.key = 'video:'+v.key;
-    c.onclick = ()=>{ markDone(c); openVideo(v.key, v.title); };
-    // Thumbnail auto-pulled from the video's own YouTube image (falls back
-    // maxres -> hq -> local file), so it always matches the current video.
-    const yt = ytId(VIDEO_SOURCES[v.key]);
-    const poster = yt ? `https://i.ytimg.com/vi/${yt}/maxresdefault.jpg` : enc(v.thumb);
-    const fallback = yt ? `https://i.ytimg.com/vi/${yt}/hqdefault.jpg` : enc(v.thumb);
-    c.innerHTML = `
-      <div class="thumb">
-        <img class="poster" src="${poster}" alt=""
-             onerror="this.onerror=null;this.src='${fallback}';">
-        <span class="num">${i===0?'▶':i}</span>
-        <span class="done-badge">✓</span>
-        <div class="play"></div>
-      </div>
-      <div class="body">
-        <span class="tag ${v.cls}">${v.tag}</span>
-        <h3>${v.title}</h3>
-        <p>${v.desc}</p>
-      </div>`;
-    vGrid.appendChild(c);
-  });
-
-  const dGrid = document.getElementById('docGrid');
-  docs.forEach(d=>{
-    const c = document.createElement('div');
-    c.className = 'doc-card';
-    c.dataset.key = 'doc:'+(d.file||d.url);
-    c.onclick = ()=>{ markDone(c); d.url ? window.open(d.url,'_blank','noopener') : openPdf(d); };
-    c.innerHTML = `
-      <span class="done-badge">✓</span>
-      <div class="doc-icon">${d.abbr}</div>
-      <div class="info">
-        <h3>${d.title}</h3>
-        <p>${d.desc}</p>
-      </div>
-      <span class="go">View</span>`;
-    dGrid.appendChild(c);
-  });
-
-  /* ---------- Modals ---------- */
-  const vModal=document.getElementById('videoModal'),
+  const vGrid=document.getElementById('videoGrid'),
+        dGrid=document.getElementById('docGrid'),
+        vModal=document.getElementById('videoModal'),
         player=document.getElementById('player'),
         pModal=document.getElementById('pdfModal'),
-        frame=document.getElementById('pdfFrame');
+        frame=document.getElementById('pdfFrame'),
+        signoff=document.getElementById('signoff'),
+        confirmCheck=document.getElementById('confirmCheck'),
+        submitBtn=document.getElementById('submitBtn'),
+        storeSelect=document.getElementById('storeSelect'),
+        hostSelect=document.getElementById('hostSelect'),
+        gameSelect=document.getElementById('gameSelect'),
+        note=document.getElementById('signoffNote'),
+        progressCount=document.getElementById('progressCount'),
+        progressTotal=document.getElementById('progressTotal');
 
-  function openVideo(key,title){
-    document.getElementById('videoTitle').textContent = title;
-    const id = ytId(VIDEO_SOURCES[key]);
-    player.src = id ? `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1` : "";
+  let currentGame=GAMES[0];
+  let totalItems=0;
+  const viewed=new Set();
+
+  /* ---------- Render the selected game's content ---------- */
+  function renderGame(game){
+    currentGame=game;
+    const logo=document.getElementById('gameLogo'), title=document.getElementById('gameTitle');
+    if(game.logo){ logo.src=game.logo; logo.alt=game.name; logo.style.display='block'; title.style.display='none'; }
+    else { logo.style.display='none'; title.style.display='block'; title.textContent=game.name; }
+
+    viewed.clear();
+    vGrid.innerHTML=''; dGrid.innerHTML='';
+
+    game.videos.forEach((v,i)=>{
+      const c=document.createElement('div');
+      c.className='card'; c.dataset.key='video:'+(v.yt||v.title);
+      c.onclick=()=>{ markDone(c); openVideo(v.yt, v.title); };
+      const id=ytId(v.yt);
+      const poster=id?`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`:'';
+      const fallback=id?`https://i.ytimg.com/vi/${id}/hqdefault.jpg`:'';
+      c.innerHTML=`
+        <div class="thumb">
+          <img class="poster" src="${poster}" alt="" onerror="this.onerror=null;this.src='${fallback}';">
+          <span class="num">${i===0?'▶':i}</span>
+          <span class="done-badge">✓</span>
+          <div class="play"></div>
+        </div>
+        <div class="body">
+          <span class="tag ${v.cls}">${v.tag}</span>
+          <h3>${esc(v.title)}</h3>
+          <p>${esc(v.desc||'')}</p>
+        </div>`;
+      vGrid.appendChild(c);
+    });
+
+    game.docs.forEach(d=>{
+      const c=document.createElement('div');
+      c.className='doc-card'; c.dataset.key='doc:'+(d.file||d.url);
+      c.onclick=()=>{ markDone(c); d.url?window.open(d.url,'_blank','noopener'):openPdf(d); };
+      c.innerHTML=`
+        <span class="done-badge">✓</span>
+        <div class="doc-icon">${d.abbr}</div>
+        <div class="info"><h3>${esc(d.title)}</h3><p>${esc(d.desc||'')}</p></div>
+        <span class="go">View</span>`;
+      dGrid.appendChild(c);
+    });
+
+    totalItems=game.videos.length+game.docs.length;
+    progressCount.textContent=0; progressTotal.textContent=totalItems;
+    confirmCheck.checked=false;
+    note.textContent=''; note.className='signoff-note';
+    refreshGate();
+  }
+
+  /* ---------- Modals ---------- */
+  function openVideo(yt,title){
+    document.getElementById('videoTitle').textContent=title;
+    const id=ytId(yt);
+    player.src=id?`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`:'';
     vModal.classList.add('open');
   }
   function closeVideo(){ player.src=''; vModal.classList.remove('open'); }
   function openPdf(d){
-    document.getElementById('pdfTitle').textContent = d.title;
-    frame.src = enc(d.file) + (d.v ? ('?v=' + d.v) : '');
+    document.getElementById('pdfTitle').textContent=d.title;
+    frame.src=enc(d.file)+(d.v?('?v='+d.v):'');
     pModal.classList.add('open');
   }
   function closePdf(){ frame.src=''; pModal.classList.remove('open'); }
-
-  [vModal,pModal].forEach(m=>m.addEventListener('click',e=>{
-    if(e.target===m){ closeVideo(); closePdf(); }
-  }));
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeVideo(); closePdf(); }});
+  [vModal,pModal].forEach(m=>m.addEventListener('click',e=>{ if(e.target===m){ closeVideo(); closePdf(); } }));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeVideo(); closePdf(); } });
 
   /* ---------- Completion tracking + gating ---------- */
-  const totalItems = videos.length + docs.length;
-  const viewed = new Set();
-  const signoff = document.getElementById('signoff');
-  const confirmCheck = document.getElementById('confirmCheck');
-  const submitBtn = document.getElementById('submitBtn');
-  const storeSelect = document.getElementById('storeSelect');
-  const hostSelect = document.getElementById('hostSelect');
-  const note = document.getElementById('signoffNote');
-  const progressCount = document.getElementById('progressCount');
-  document.getElementById('progressTotal').textContent = totalItems;
-
   function markDone(card){
     if(viewed.has(card.dataset.key)) return;
     viewed.add(card.dataset.key);
     card.classList.add('done');
-    progressCount.textContent = viewed.size;
+    progressCount.textContent=viewed.size;
     refreshGate();
   }
   function selectedStore(){ return SITE_DATA.stores.find(s=>s.num===storeSelect.value); }
   function refreshGate(){
-    const allViewed = viewed.size >= totalItems;
+    const allViewed=totalItems>0 && viewed.size>=totalItems;
     signoff.classList.toggle('locked', !allViewed);
-    const st = selectedStore();
-    const ready = allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st && st.sheetId;
-    submitBtn.disabled = !ready;
+    const st=selectedStore();
+    submitBtn.disabled=!(allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st && st.sheetId);
   }
   confirmCheck.addEventListener('change', refreshGate);
 
-  /* ---------- Store + host dropdowns ---------- */
-  // Sort store numbers: numeric ones ascending first, non-numeric (e.g. "HQ") last, alphabetical.
+  /* ---------- Store + host dropdowns (shared across games) ---------- */
   function cmpStoreNum(a,b){
-    var na=parseInt(a,10), nb=parseInt(b,10);
-    var aNum=!isNaN(na), bNum=!isNaN(nb);
-    if(aNum&&bNum) return na-nb;
-    if(aNum!==bNum) return aNum?-1:1;
-    a=String(a).toLowerCase(); b=String(b).toLowerCase();
-    return a<b?-1:a>b?1:0;
+    var na=parseInt(a,10),nb=parseInt(b,10),an=!isNaN(na),bn=!isNaN(nb);
+    if(an&&bn)return na-nb; if(an!==bn)return an?-1:1;
+    a=String(a).toLowerCase();b=String(b).toLowerCase();return a<b?-1:a>b?1:0;
   }
   function storesSorted(){ return [...SITE_DATA.stores].sort((a,b)=>cmpStoreNum(a.num,b.num)); }
-
   function populateStores(){
-    const cur = storeSelect.value;
-    storeSelect.innerHTML = '<option value="" disabled selected>Select your store…</option>';
-    storesSorted().forEach(s=>{
-      const o=document.createElement('option');
-      o.value=s.num; o.textContent=`${s.num} - ${s.name}`;
-      storeSelect.appendChild(o);
-    });
+    const cur=storeSelect.value;
+    storeSelect.innerHTML='<option value="" disabled selected>Select your store…</option>';
+    storesSorted().forEach(s=>{ const o=document.createElement('option'); o.value=s.num; o.textContent=`${s.num} - ${s.name}`; storeSelect.appendChild(o); });
     if(cur && SITE_DATA.stores.some(s=>s.num===cur)) storeSelect.value=cur;
   }
-
   function populateHosts(){
-    const num = storeSelect.value;
-    if(!num){
-      hostSelect.disabled = true;
-      hostSelect.innerHTML = '<option value="" disabled selected>Select your store first…</option>';
-      refreshGate(); return;
-    }
-    const list = SITE_DATA.hosts.filter(h=>h.stores.includes(num))
-      .sort((a,b)=> a.first.toLowerCase().localeCompare(b.first.toLowerCase())
-                 || a.last.toLowerCase().localeCompare(b.last.toLowerCase()));
-    hostSelect.disabled = false;
-    hostSelect.innerHTML = '<option value="" disabled selected>Select your name…</option>';
-    list.forEach(h=>{
-      const o=document.createElement('option');
-      o.value=`${h.first} ${h.last}`; o.textContent=`${h.first} ${h.last}`;
-      hostSelect.appendChild(o);
-    });
+    const num=storeSelect.value;
+    if(!num){ hostSelect.disabled=true; hostSelect.innerHTML='<option value="" disabled selected>Select your store first…</option>'; refreshGate(); return; }
+    const list=SITE_DATA.hosts.filter(h=>h.stores.includes(num))
+      .sort((a,b)=>a.first.toLowerCase().localeCompare(b.first.toLowerCase())||a.last.toLowerCase().localeCompare(b.last.toLowerCase()));
+    hostSelect.disabled=false;
+    hostSelect.innerHTML='<option value="" disabled selected>Select your name…</option>';
+    list.forEach(h=>{ const o=document.createElement('option'); o.value=`${h.first} ${h.last}`; o.textContent=`${h.first} ${h.last}`; hostSelect.appendChild(o); });
     refreshGate();
   }
-
   storeSelect.addEventListener('change', ()=>{
-    const st = selectedStore();
-    if(st && !st.sheetId){
-      note.textContent = 'This store has no sheet linked yet — add its link in Admin before sign-offs can be recorded.';
-      note.className = 'signoff-note warn';
-    } else { note.textContent=''; note.className='signoff-note'; }
+    const st=selectedStore();
+    if(st && !st.sheetId){ note.textContent='This store has no sheet linked yet — add its link in Admin before sign-offs can be recorded.'; note.className='signoff-note warn'; }
+    else { note.textContent=''; note.className='signoff-note'; }
     populateHosts();
   });
   hostSelect.addEventListener('change', refreshGate);
 
-  /* ---------- Reset ---------- */
-  function resetPage(){
-    viewed.clear();
-    document.querySelectorAll('.card.done, .doc-card.done').forEach(el=>el.classList.remove('done'));
-    progressCount.textContent = 0;
-    confirmCheck.checked = false;
-    storeSelect.selectedIndex = 0;
-    populateHosts();
-    note.textContent = '';
-    note.className = 'signoff-note';
-    submitBtn.disabled = true;
+  /* ---------- Game picker ---------- */
+  const mainEl=document.querySelector('main');
+  function populateGames(){
+    gameSelect.innerHTML='<option value="" disabled selected>Select your game…</option>';
+    GAMES.forEach((g,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=g.name; gameSelect.appendChild(o); });
+    document.getElementById('gamePick').style.display='flex';
+  }
+  function showNoGame(){
+    mainEl.classList.add('no-game');
+    document.getElementById('gameLogo').style.display='none';
+    document.getElementById('gameTitle').style.display='none';
+    vGrid.innerHTML=''; dGrid.innerHTML='';
+    viewed.clear(); totalItems=0; progressCount.textContent=0;
+    confirmCheck.checked=false; note.textContent=''; note.className='signoff-note';
     refreshGate();
-    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  gameSelect.addEventListener('change', ()=>{
+    if(gameSelect.value===''){ showNoGame(); return; }
+    mainEl.classList.remove('no-game');
+    renderGame(GAMES[parseInt(gameSelect.value,10)]||GAMES[0]);
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  /* ---------- Reset after a submit ---------- */
+  function resetPage(){
+    document.querySelectorAll('.card.done, .doc-card.done').forEach(el=>el.classList.remove('done'));
+    viewed.clear();
+    progressCount.textContent=0;
+    confirmCheck.checked=false;
+    storeSelect.selectedIndex=0;
+    populateHosts();
+    note.textContent=''; note.className='signoff-note';
+    submitBtn.disabled=true;
+    refreshGate();
+    window.scrollTo({top:0,behavior:'smooth'});
   }
 
   /* ---------- Submit ---------- */
   submitBtn.addEventListener('click', async ()=>{
     if(submitBtn.disabled) return;
-    const st = selectedStore();
-    const host = hostSelect.value;
-    if(!st || !host){
-      note.textContent='Please pick your store and name first.'; note.className='signoff-note warn'; return;
-    }
-    if(!st.sheetId){
-      note.textContent='This store has no sheet linked yet. Add its link in Admin.'; note.className='signoff-note warn'; return;
-    }
-    const payload={
-      spreadsheetId: st.sheetId,
-      gid: st.gid,
-      store: `${st.num} - ${st.name}`,
-      storeNum: st.num,
-      name: host,
-      confirmed: true,
-      submittedAt: new Date().toISOString(),
-      game: "Mystery Menu"
-    };
-    submitBtn.disabled=true;
-    note.textContent='Submitting…'; note.className='signoff-note';
+    const st=selectedStore(), host=hostSelect.value;
+    if(!st||!host){ note.textContent='Please pick your store and name first.'; note.className='signoff-note warn'; return; }
+    if(!st.sheetId){ note.textContent='This store has no sheet linked yet. Add its link in Admin.'; note.className='signoff-note warn'; return; }
+    const payload={ spreadsheetId:st.sheetId, gid:st.gid, store:`${st.num} - ${st.name}`, storeNum:st.num, name:host, confirmed:true, submittedAt:new Date().toISOString(), game:currentGame.name };
+    submitBtn.disabled=true; note.textContent='Submitting…'; note.className='signoff-note';
     try{
-      await fetch(ENDPOINT_URL,{
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify(payload)
-      });
-      note.textContent=`✓ Sign-off recorded for ${host} (${st.num} - ${st.name}). Resetting for the next host…`;
+      await fetch(ENDPOINT_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload) });
+      note.textContent=`✓ ${currentGame.name} sign-off recorded for ${host} (${st.num} - ${st.name}). Resetting for the next host…`;
       note.className='signoff-note ok';
       setTimeout(resetPage, 2600);
     }catch(err){
@@ -638,6 +658,8 @@
   });
 
   /* ---------- Init ---------- */
+  populateGames();
+  showNoGame();          // nothing shows until a game is chosen
   populateStores();
   populateHosts();
   refreshGate();
