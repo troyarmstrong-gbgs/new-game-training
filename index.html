@@ -454,7 +454,7 @@
     }
   ];
 
-  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzHbfZKwdAHWm4yUynpvEm5KNXZ8dxbbChZjR79hfrgeju2YaYlN-L1QMqRp42DEyY3/exec";
+  const ENDPOINT_URL = "https://script.google.com/a/macros/theescapegame.com/s/AKfycbxbH_2S5YWKun1YC76BSHUJKVS_tlrOD2vcgHkzNnm0F-Ur36E954PfGl6fjTi96Bbc/exec";
 
   let SITE_DATA = JSON.parse(document.getElementById('site-data').textContent);
   const enc = f => f.split('/').map(encodeURIComponent).join('/');
@@ -568,7 +568,7 @@
     const allViewed=totalItems>0 && viewed.size>=totalItems;
     signoff.classList.toggle('locked', !allViewed);
     const st=selectedStore();
-    submitBtn.disabled=!(allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st && st.sheetId);
+    submitBtn.disabled=!(allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st);
   }
   confirmCheck.addEventListener('change', refreshGate);
 
@@ -597,8 +597,7 @@
   }
   storeSelect.addEventListener('change', ()=>{
     const st=selectedStore();
-    if(st && !st.sheetId){ note.textContent='This store has no sheet linked yet — add its link in Admin before sign-offs can be recorded.'; note.className='signoff-note warn'; }
-    else { note.textContent=''; note.className='signoff-note'; }
+    note.textContent=''; note.className='signoff-note';
     populateHosts();
   });
   hostSelect.addEventListener('change', refreshGate);
@@ -645,7 +644,6 @@
     if(submitBtn.disabled) return;
     const st=selectedStore(), host=hostSelect.value;
     if(!st||!host){ note.textContent='Please pick your store and name first.'; note.className='signoff-note warn'; return; }
-    if(!st.sheetId){ note.textContent='This store has no sheet linked yet. Add its link in Admin.'; note.className='signoff-note warn'; return; }
     const payload={ spreadsheetId:st.sheetId, gid:st.gid, store:`${st.num} - ${st.name}`, storeNum:st.num, name:host, confirmed:true, submittedAt:new Date().toISOString(), game:currentGame.name };
     submitBtn.disabled=true; note.textContent='Submitting…'; note.className='signoff-note';
     try{
