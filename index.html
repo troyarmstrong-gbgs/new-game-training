@@ -324,6 +324,8 @@
     align-items:center;justify-content:center;flex-wrap:wrap;
   }
   .game-pick label{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--toupee);}
+  .link-btn{background:none;border:none;color:var(--toupee);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;padding:6px 2px;}
+  .link-btn:hover{color:#fff;}
   .game-pick select{flex:none;min-width:220px;max-width:340px;}
 
   #gamePrompt{
@@ -380,6 +382,8 @@
           <select id="hostSelect" class="field" aria-label="Select your name" disabled>
             <option value="" disabled selected>Select your store first…</option>
           </select>
+          <input id="hostOther" class="field" type="text" placeholder="Type your full name…" autocomplete="off" style="display:none;">
+          <button type="button" id="hostBack" class="link-btn" style="display:none;">‹ choose from list</button>
           <button id="submitBtn" class="submit-btn" disabled>Submit Sign-Off</button>
         </div>
         <p class="signoff-note" id="signoffNote"></p>
@@ -478,6 +482,8 @@
         submitBtn=document.getElementById('submitBtn'),
         storeSelect=document.getElementById('storeSelect'),
         hostSelect=document.getElementById('hostSelect'),
+        hostOther=document.getElementById('hostOther'),
+        hostBack=document.getElementById('hostBack'),
         gameSelect=document.getElementById('gameSelect'),
         note=document.getElementById('signoffNote'),
         progressCount=document.getElementById('progressCount'),
@@ -564,11 +570,13 @@
     refreshGate();
   }
   function selectedStore(){ return SITE_DATA.stores.find(s=>s.num===storeSelect.value); }
+  function otherMode(){ return hostSelect.value==='__OTHER__'; }
+  function currentHostName(){ return otherMode() ? hostOther.value.trim() : hostSelect.value; }
   function refreshGate(){
     const allViewed=totalItems>0 && viewed.size>=totalItems;
     signoff.classList.toggle('locked', !allViewed);
     const st=selectedStore();
-    submitBtn.disabled=!(allViewed && confirmCheck.checked && storeSelect.value && hostSelect.value && st);
+    submitBtn.disabled=!(allViewed && confirmCheck.checked && storeSelect.value && currentHostName() && st);
   }
   confirmCheck.addEventListener('change', refreshGate);
 
@@ -585,7 +593,12 @@
     storesSorted().forEach(s=>{ const o=document.createElement('option'); o.value=s.num; o.textContent=`${s.num} - ${s.name}`; storeSelect.appendChild(o); });
     if(cur && SITE_DATA.stores.some(s=>s.num===cur)) storeSelect.value=cur;
   }
+  function backToList(){
+    hostOther.value=''; hostOther.style.display='none'; hostBack.style.display='none';
+    hostSelect.style.display='';
+  }
   function populateHosts(){
+    backToList();                       // always start in dropdown mode
     const num=storeSelect.value;
     if(!num){ hostSelect.disabled=true; hostSelect.innerHTML='<option value="" disabled selected>Select your store first…</option>'; refreshGate(); return; }
     const list=SITE_DATA.hosts.filter(h=>h.stores.includes(num))
@@ -593,14 +606,25 @@
     hostSelect.disabled=false;
     hostSelect.innerHTML='<option value="" disabled selected>Select your name…</option>';
     list.forEach(h=>{ const o=document.createElement('option'); o.value=`${h.first} ${h.last}`; o.textContent=`${h.first} ${h.last}`; hostSelect.appendChild(o); });
+    const other=document.createElement('option');
+    other.value='__OTHER__'; other.textContent="Don't see your name? Type it in →";
+    hostSelect.appendChild(other);
     refreshGate();
   }
   storeSelect.addEventListener('change', ()=>{
-    const st=selectedStore();
     note.textContent=''; note.className='signoff-note';
     populateHosts();
   });
-  hostSelect.addEventListener('change', refreshGate);
+  hostSelect.addEventListener('change', ()=>{
+    if(hostSelect.value==='__OTHER__'){
+      hostSelect.style.display='none';
+      hostOther.style.display=''; hostBack.style.display='';
+      hostOther.focus();
+    }
+    refreshGate();
+  });
+  hostOther.addEventListener('input', refreshGate);
+  hostBack.addEventListener('click', ()=>{ backToList(); hostSelect.selectedIndex=0; refreshGate(); });
 
   /* ---------- Game picker ---------- */
   const mainEl=document.querySelector('main');
@@ -642,7 +666,7 @@
   /* ---------- Submit ---------- */
   submitBtn.addEventListener('click', async ()=>{
     if(submitBtn.disabled) return;
-    const st=selectedStore(), host=hostSelect.value;
+    const st=selectedStore(), host=currentHostName();
     if(!st||!host){ note.textContent='Please pick your store and name first.'; note.className='signoff-note warn'; return; }
     const payload={ spreadsheetId:st.sheetId, gid:st.gid, store:`${st.num} - ${st.name}`, storeNum:st.num, name:host, confirmed:true, submittedAt:new Date().toISOString(), game:currentGame.name };
     submitBtn.disabled=true; note.textContent='Submitting…'; note.className='signoff-note';
